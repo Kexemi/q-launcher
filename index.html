@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AI-OS">
+<link rel="apple-touch-icon" href="icon.png">
+<title>AI-OS</title>
+<style>
+  :root{--bg:#07070b;--ink:#ede9df;--ink2:#a9a49b;--jade:#4cc492;--gold:#d4b177;
+    --mono:"Cascadia Mono",Consolas,ui-monospace,monospace;
+    --serif:Constantia,"Palatino Linotype",Georgia,serif}
+  *{box-sizing:border-box;margin:0}
+  body{background:radial-gradient(120% 60% at 50% -20%,rgba(76,196,146,.09),transparent 60%),
+    linear-gradient(180deg,#0b0b12,var(--bg) 40%);min-height:100vh;color:var(--ink);
+    font-family:var(--serif);display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:18px;text-align:center;padding:24px}
+  .mark{font-size:34px;letter-spacing:.5px}.mark em{font-style:italic;color:var(--gold);font-size:24px}
+  .ring{width:52px;height:52px;border-radius:50%;border:3px solid rgba(76,196,146,.25);
+    border-top-color:var(--jade);animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #msg{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--ink2);max-width:340px;line-height:1.7}
+  button{margin-top:8px;padding:12px 26px;border-radius:12px;border:none;cursor:pointer;display:none;
+    background:linear-gradient(180deg,#ecd6a4,var(--gold));color:#191509;
+    font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+</style>
+</head>
+<body>
+<div class="mark">AI-OS <em>console</em></div>
+<div class="ring" id="ring"></div>
+<div id="msg">connecting&hellip;</div>
+<button id="retry" onclick="go()">Retry</button>
+<script>
+"use strict";
+// Stable entry point. The PC's tunnel supervisor pushes the current console
+// address into url.json whenever it changes; this page bounces you there.
+// The access token never lives in this repo: it arrives once in the URL
+// fragment (#t=...), is stored on the device, and is appended client-side.
+var KEY = "aios_token";
+var m = location.hash.match(/t=([A-Za-z0-9]+)/);
+if (m) { try { localStorage.setItem(KEY, m[1]); } catch (e) {}
+  history.replaceState(null, "", location.pathname); }
+
+function fail(msg) {
+  document.getElementById("ring").style.display = "none";
+  document.getElementById("msg").innerHTML = msg;
+  document.getElementById("retry").style.display = "inline-block";
+}
+
+function go() {
+  document.getElementById("ring").style.display = "";
+  document.getElementById("retry").style.display = "none";
+  document.getElementById("msg").textContent = "connecting…";
+  var t = null; try { t = localStorage.getItem(KEY); } catch (e) {}
+  if (!t) return fail("no access token on this device — open the full link from your Fable/Telegram message once (it carries #t=…)");
+  fetch("url.json?x=" + Date.now(), {cache: "no-store"})
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      if (!d.url) return fail("no console address published yet");
+      var dest = d.url.replace(/\/+$/, "") + "/t/" + t + "/";
+      // verify the tunnel is actually alive before leaving this page
+      fetch(dest + "api/ping", {mode: "cors"}).then(function (r) { return r.json(); })
+        .then(function (p) { location.replace(dest); })
+        .catch(function () { location.replace(dest); }); // CORS opacity is fine — still navigate
+    })
+    .catch(function () { fail("can't reach the address file — check connection, then retry. if the PC just restarted, the new address lands here within ~1 minute."); });
+}
+go();
+</script>
+</body>
+</html>
