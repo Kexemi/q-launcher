@@ -1,14 +1,19 @@
 {
-  "schema": "aios.scenario.quest-commission.v1",
+  "schema": "aios.scenario.quest-commission.v2",
   "source_mode": "SCENARIO_FIXTURE",
   "quest": {
     "id": "scenario-quest-001",
     "title": "Productive living-world loop",
-    "why": "Move owner intent through one proof-backed world loop.",
+    "why": "Move owner intent through one proof-backed world loop that yields an inspectable artifact.",
     "assignee_agent_id": "workhorse-builder-01",
     "proof_requirement": {
       "artifact_id": "scenario-relic-001",
-      "output_hash": "6b97d4c66c7daf0182542fa986586b415f396d613c0b77091357a485509a8bc0"
+      "output_hash": "8b1cb9fb3e65e1dcef0056118b293a98fa3daefe18d25200719df1180d6c1f26",
+      "required_sections": [
+        "system_changes",
+        "acceptance_contract",
+        "limitations"
+      ]
     },
     "state": "commissioned",
     "next_event": "quest_dispatched"
