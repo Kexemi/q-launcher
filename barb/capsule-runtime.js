@@ -1,5 +1,5 @@
 window.AIOS_CAPSULE_RUNTIME = Object.freeze(Object.assign({
-  appId: "barb.taste",
+  appId: "barb.account",
   discoveryUrl: "../url.json",
   apiBase: "",
   apiPath: "/api/capsules/barb",

@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://telegram.org; style-src 'self'; img-src 'self' data:; connect-src 'self' https://*.trycloudflare.com http://127.0.0.1:*; object-src 'none'; base-uri 'none'; form-action 'none'">
   <meta name="theme-color" content="#171318">
-  <title>Barb Taste</title>
+  <title>Barb</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="app.css">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -18,19 +18,47 @@
     <header class="topbar">
       <button class="back-button" id="backButton" type="button" aria-label="Review the previous line" disabled>←</button>
       <div class="identity">
-        <span class="eyebrow">BARB</span>
-        <strong>Taste</strong>
+        <span class="eyebrow">BARB STANLEY</span>
+        <strong>Account room</strong>
       </div>
       <span class="progress-label" id="progressLabel">—</span>
     </header>
 
-    <div class="progress-track" role="progressbar" aria-label="Taste round progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressTrack">
+    <nav class="view-tabs" aria-label="Barb views">
+      <button class="view-tab" id="activityTab" data-view="activity" type="button" aria-selected="true">Activity</button>
+      <button class="view-tab" id="tasteTab" data-view="taste" type="button" aria-selected="false">Taste</button>
+    </nav>
+
+    <div class="progress-track" id="progressTrack" role="progressbar" aria-label="Taste round progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden>
       <div class="progress-fill" id="progressFill"></div>
     </div>
 
     <section class="loading-panel" id="loadingPanel" aria-live="polite">
       <div class="pulse-mark" aria-hidden="true">B</div>
-      <p id="loadingText">Opening your taste round…</p>
+      <p id="loadingText">Opening Barb…</p>
+    </section>
+
+    <section class="activity-panel" id="activityPanel" hidden aria-label="Barb activity inbox">
+      <div class="activity-head">
+        <div>
+          <p class="section-kicker">READ-ONLY INBOX</p>
+          <h1>What came back</h1>
+        </div>
+        <span class="connection-pill" id="activityStatus">Waiting</span>
+      </div>
+      <div class="activity-counts" aria-label="Activity counts">
+        <div><strong id="replyActivityCount">0</strong><span>Replies</span></div>
+        <div><strong id="mentionActivityCount">0</strong><span>Mentions</span></div>
+        <div><strong id="likeActivityCount">0</strong><span>Likes</span></div>
+        <div><strong id="followActivityCount">0</strong><span>Follows</span></div>
+      </div>
+      <div class="activity-list" id="activityList"></div>
+      <div class="activity-empty" id="activityEmpty">
+        <strong>No X feed connected yet.</strong>
+        <span>The receiver is ready locally. Official read-only X access, pricing, and the persistent stream still require owner approval.</span>
+      </div>
+      <p class="activity-policy">AI-OS keeps likes and routine follows quiet. Replies, mentions, quotes, unusual bursts, and risks rise for review.</p>
+      <p class="authority-note activity-authority">Read only. Nothing here replies, likes, follows, schedules, approves a batch, or posts to X.</p>
     </section>
 
     <section class="taste-card" id="tasteCard" hidden>
