@@ -44,6 +44,7 @@
 // in this public repo. Existing devices keep it in localStorage; new phones
 // use a short pairing code approved from the already-trusted console side.
 var TOKEN_KEY="aios_token", DEVICE_KEY="aios_device", PANE_KEY="aios_pane";
+var PAIR_CODE_KEY="aios_pair_code", PAIR_AT_KEY="aios_pair_created_at";
 var pairTimer=null, currentTunnel=null;
 function $(id){return document.getElementById(id)}
 function setBusy(on){$("ring").style.display=on?"":"none"}
@@ -70,14 +71,21 @@ function makeCode(){
   var chars="ABCDEFGHJKMNPQRSTUVWXYZ23456789", a=new Uint8Array(6), out="";
   crypto.getRandomValues(a); for(var i=0;i<a.length;i++)out+=chars[a[i]%chars.length]; return out;
 }
+function clearPairCode(){try{localStorage.removeItem(PAIR_CODE_KEY);localStorage.removeItem(PAIR_AT_KEY)}catch(e){}}
+function getPairCode(){
+  var code=null, created=0, now=Date.now();
+  try{code=localStorage.getItem(PAIR_CODE_KEY);created=Number(localStorage.getItem(PAIR_AT_KEY)||0)}catch(e){}
+  if(code&&/^[A-Z0-9]{6}$/.test(code)&&created&&now-created<9*60*1000)return code;
+  code=makeCode(); try{localStorage.setItem(PAIR_CODE_KEY,code);localStorage.setItem(PAIR_AT_KEY,String(now))}catch(e){} return code;
+}
 function showFail(msg){setBusy(false);$("msg").innerHTML=msg;$("retry").style.display="inline-block";}
 function fetchTunnel(){return fetch("url.json?x="+Date.now(),{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){if(!d.url)throw new Error("no console address published yet"); currentTunnel=d.url.replace(/\/+$/,""); return currentTunnel;});}
 function redirectWithToken(tok,pane){pane=sanitizePane(pane||localStorage.getItem(PANE_KEY)||"owneros"); try{localStorage.setItem(TOKEN_KEY,tok);localStorage.setItem(PANE_KEY,pane)}catch(e){} location.replace(currentTunnel+"/t/"+tok+"/#"+pane);}
 function startPair(){
   setBusy(false); $("retry").style.display="none"; $("msg").textContent="pair this phone once";
-  var code=makeCode(), device=getDevice(), pane=sanitizePane(localStorage.getItem(PANE_KEY)||"owneros");
+  var code=getPairCode(), device=getDevice(), pane=sanitizePane(localStorage.getItem(PANE_KEY)||"owneros");
   $("pair").style.display="block";
-  $("pair").innerHTML='<div class="hint">Send this code to Hermes:</div><div class="code">'+code+'</div><div class="hint"><strong>PAIR '+code+'</strong><br>Waiting here. After approval, this page opens the console automatically.</div><div class="row"><button onclick="copyPair(\''+code+'\')">Copy code</button><button class="ghost" onclick="go()">Refresh</button></div>';
+  $("pair").innerHTML='<div class="hint">Send this code to Hermes:</div><div class="code">'+code+'</div><div class="hint"><strong>PAIR '+code+'</strong><br>Return to this same page after approval. The code stays valid for this phone.</div><div class="row"><button onclick="copyPair(\''+code+'\')">Copy code</button><button class="ghost" onclick="go()">Check again</button></div>';
   fetch(currentTunnel+"/api/pair/request",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code:code,device:device,pane:pane})})
     .then(function(r){return r.json()}).then(function(d){if(!d.ok)throw new Error(d.error||"pair request failed"); pollPair(code,device);})
     .catch(function(e){showFail("pair request failed — retry after the PC tunnel is awake.<br>"+String(e.message||e));});
@@ -87,7 +95,8 @@ function pollPair(code,device){
   function check(){
     fetch(currentTunnel+"/api/pair/status?code="+encodeURIComponent(code)+"&device="+encodeURIComponent(device),{cache:"no-store"})
       .then(function(r){return r.json()}).then(function(d){
-        if(d.approved&&d.token){clearInterval(pairTimer); redirectWithToken(d.token,d.pane);}
+        if(d.approved&&d.token){clearInterval(pairTimer);clearPairCode();redirectWithToken(d.token,d.pane);return;}
+        if(d.pending===false){clearInterval(pairTimer);clearPairCode();startPair();}
       }).catch(function(){});
   }
   check(); pairTimer=setInterval(check,2500);
