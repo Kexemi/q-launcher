@@ -42,7 +42,7 @@
 // address into url.json whenever it changes. The access token is never stored
 // in this public repo. Existing devices keep it in localStorage; new phones
 // use a short pairing code approved from the already-trusted console side.
-var TOKEN_KEY="aios_token", DEVICE_KEY="aios_device", PANE_KEY="aios_pane";
+var TOKEN_KEY="aios_token", DEVICE_KEY="aios_device", PANE_KEY="aios_pane", DIRECT_KEY="aios_direct";
 var pairTimer=null, currentTunnel=null;
 function $(id){return document.getElementById(id)}
 function setBusy(on){$("ring").style.display=on?"":"none"}
@@ -52,7 +52,7 @@ function parseHash(){
   var params=new URLSearchParams(h.indexOf("=")>=0?h:("pane=" + encodeURIComponent(h)));
   var tok=params.get("t"); var pane=sanitizePane(params.get("pane")||"");
   if(tok&&/^[A-Za-z0-9]+$/.test(tok)){try{localStorage.setItem(TOKEN_KEY,tok)}catch(e){}}
-  if(pane){try{localStorage.setItem(PANE_KEY,pane)}catch(e){}}
+  if(pane){try{if(pane==="barb")sessionStorage.setItem(DIRECT_KEY,pane);else localStorage.setItem(PANE_KEY,pane)}catch(e){}}
   if(tok||pane){history.replaceState(null,"",location.pathname)}
 }
 function getDevice(){
@@ -66,10 +66,10 @@ function makeCode(){
 }
 function showFail(msg){setBusy(false);$("msg").innerHTML=msg;$("retry").style.display="inline-block";}
 function fetchTunnel(){return fetch("url.json?x="+Date.now(),{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){if(!d.url)throw new Error("no console address published yet"); currentTunnel=d.url.replace(/\/+$/,""); return currentTunnel;});}
-function redirectWithToken(tok,pane){pane=sanitizePane(pane||localStorage.getItem(PANE_KEY)||"owneros"); try{localStorage.setItem(TOKEN_KEY,tok);localStorage.setItem(PANE_KEY,pane)}catch(e){} location.replace(currentTunnel+"/t/"+tok+"/#"+pane);}
+function redirectWithToken(tok,pane){pane=sanitizePane(pane||sessionStorage.getItem(DIRECT_KEY)||localStorage.getItem(PANE_KEY)||"owneros"); try{localStorage.setItem(TOKEN_KEY,tok)}catch(e){} if(pane==="barb"){try{sessionStorage.removeItem(DIRECT_KEY)}catch(e){} location.replace(currentTunnel+"/t/"+tok+"/barb-taste/");return;} try{localStorage.setItem(PANE_KEY,pane)}catch(e){} location.replace(currentTunnel+"/t/"+tok+"/#"+pane);}
 function startPair(){
   setBusy(false); $("retry").style.display="none"; $("msg").textContent="pair this phone once";
-  var code=makeCode(), device=getDevice(), pane=sanitizePane(localStorage.getItem(PANE_KEY)||"owneros");
+  var code=makeCode(), device=getDevice(), pane=sanitizePane(sessionStorage.getItem(DIRECT_KEY)||localStorage.getItem(PANE_KEY)||"owneros");
   $("pair").style.display="block";
   $("pair").innerHTML='<div class="hint">Send this code to Hermes:</div><div class="code">'+code+'</div><div class="hint"><strong>PAIR '+code+'</strong><br>Waiting here. After approval, this page opens the console automatically.</div><div class="row"><button onclick="copyPair(\''+code+'\')">Copy code</button><button class="ghost" onclick="go()">Refresh</button></div>';
   fetch(currentTunnel+"/api/pair/request",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code:code,device:device,pane:pane})})
@@ -93,7 +93,7 @@ function go(){
   fetchTunnel().then(function(){
     var t=null; try{t=localStorage.getItem(TOKEN_KEY)}catch(e){}
     if(!t)return startPair();
-    redirectWithToken(t,localStorage.getItem(PANE_KEY)||"owneros");
+    redirectWithToken(t,sessionStorage.getItem(DIRECT_KEY)||localStorage.getItem(PANE_KEY)||"owneros");
   }).catch(function(){showFail("can't reach the address file — check connection, then retry. if the PC just restarted, the new address lands here within ~1 minute.");});
 }
 go();
