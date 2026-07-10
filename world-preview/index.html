@@ -21,24 +21,31 @@ function quarter(x,y){house(x-25,y-5,20,18,'#b7794f','#ad7d53');house(x-1,y-10,2
 function arena(x,y){g.fillStyle=P.stone2;g.beginPath();g.ellipse(x,y,22,15,0,0,Math.PI*2);g.fill();g.fillStyle='#a8a68f';g.beginPath();g.ellipse(x,y,18,11,0,0,Math.PI*2);g.fill();g.fillStyle=P.dirt;g.beginPath();g.ellipse(x,y,13,7,0,0,Math.PI*2);g.fill();for(const xx of [-17,17]){q(x+xx-2,y-13,4,9,P.stone);q(x+xx-3,y-15,6,3,P.gold)}q(x-4,y-3,8,6,'#9a7137');q(x-2,y-5,4,3,P.gold)}
 function sprite(x,y,k,kind=0){const b=Math.round(Math.sin(now*.007+kind)*1);q(x-3,y-7+b,6,5,'#d7a87d');q(x-4,y-2+b,8,8,k);q(x-3,y+6+b,3,3,P.ink);q(x+1,y+6+b,3,3,P.ink);q(x-4,y-8+b,8,2,kind%2?P.gold:P.blue);q(x-2,y-5+b,1,1,P.ink);q(x+1,y-5+b,1,1,P.ink)}
 function bird(x,y){const flap=Math.sin(now*.012)>0?2:0;q(x,y,3,2,'#20262a');q(x-2,y-flap,2,1,'#20262a');q(x+3,y-flap,2,1,'#20262a')}
+function river(points,width=16){g.strokeStyle='#274c57';g.lineWidth=width+5;g.lineJoin='round';g.lineCap='round';g.beginPath();g.moveTo(...points[0]);for(const p of points.slice(1))g.lineTo(...p);g.stroke();g.strokeStyle=P.water;g.lineWidth=width;g.stroke();g.strokeStyle='rgba(123,186,193,.42)';g.lineWidth=2;g.stroke()}
+function rock(x,y,s=1){q(x-4*s,y-2*s,8*s,5*s,P.stone2);q(x-3*s,y-4*s,6*s,3*s,P.stone);q(x-1*s,y-5*s,3*s,2*s,'#98a294')}
+function crate(x,y){q(x-4,y-4,8,8,P.wood);q(x-3,y-3,6,6,P.wood2);ln(x-3,y-3,x+3,y+3,P.wood,1);ln(x+3,y-3,x-3,y+3,P.wood,1)}
 function draw(){now=performance.now();q(0,0,W,H,P.grass);for(let y=0;y<H;y+=6)for(let x=0;x<W;x+=6){const n=((x*11+y*17)>>2)%13;if(n<3)q(x+1,y+2,2,2,n===0?P.grass2:P.grass3)}
-// water coast and islands
-g.fillStyle=P.water;g.beginPath();g.moveTo(0,0);for(let y=0;y<=H;y+=6)g.lineTo(W*.15+Math.sin(y*.09)*7,y);g.lineTo(0,H);g.closePath();g.fill();for(let y=5;y<H;y+=9)ln(2,y,W*.11+Math.sin(y*.09)*5,y,P.water2,1);for(let i=0;i<8;i++){const x=7+(i*13)%Math.max(12,W*.1),y=35+(i*41)%(H-70);q(x,y,4,2,'#6f9a68');q(x+2,y-1,1,1,'#e7b2c2')}
-// cliffs at north and east
-q(W*.12,28,W*.88,18,P.stone2);for(let x=W*.12;x<W;x+=8){q(x,28+((x/8)%2)*2,7,5,P.stone);q(x+1,36,6,10,'#4b6451')}q(W-22,28,22,H*.62,P.stone2);for(let y=32;y<H*.62;y+=9)q(W-19,y,14,6,P.stone);
-const cx=W*.5,cy=H*.49;path([[cx,cy],[cx-45,cy-55],[cx-63,cy-91]],9);path([[cx,cy],[cx+43,cy-52],[cx+63,cy-84]],9);path([[cx,cy],[cx-37,cy+48],[cx-59,cy+82]],8);path([[cx,cy],[cx+38,cy+44],[cx+61,cy+76]],8);path([[W*.18,cy-10],[cx,cy],[W-28,cy-16]],6);
-// detailed landscape
-for(let i=0;i<34;i++){const x=18+((i*43)%(W-45)),y=45+((i*59)%(H-95));if(Math.hypot(x-cx,y-cy)>32&&x<W-26)tree(x,y,i%4===0?.75:1)}for(let i=0;i<28;i++){const x=24+((i*31)%(W-50)),y=52+((i*47)%(H-110));if(Math.hypot(x-cx,y-cy)>26)flower(x,y,[P.gold,'#d98b9c','#83b6d5'][i%3])}
-// district landmarks
-citadel(cx,cy-25);forge(cx-62,cy-92);quarter(cx+60,cy-84);library(cx-58,cy+76);arena(cx+60,cy+70);
-// bridge and sealed gate to Quiet Quarter
-const gx=cx+42,gy=cy-53;q(gx-10,gy-3,20,7,P.wood2);for(let xx=-8;xx<=8;xx+=4)q(gx+xx,gy-5,2,11,P.stone);q(gx-2,gy-10,5,7,P.red);q(gx-1,gy-12,3,3,'#e9b09e');
-// owner and living agents
-sprite(cx,cy+10,'#e6e0cf',0);sprite(cx-54+Math.sin(now*.0005)*9,cy-72,'#bd6851',1);sprite(cx+50+Math.sin(now*.00035)*10,cy-66,'#d4ae5f',2);sprite(cx-38,cy+54+Math.sin(now*.0004)*7,'#588c78',3);sprite(cx+49-Math.sin(now*.00055)*9,cy+54,'#7288a8',4);bird(cx+10+Math.sin(now*.0007)*25,cy-50+Math.cos(now*.0009)*9);
-// quest pennant above forge
-q(cx-75,cy-126,2,18,P.wood);q(cx-73,cy-125,13,7,P.gold);q(cx-61,cy-125,3,3,P.gold);tx('!',cx-68,cy-121,P.ink,6);
-// lantern route
-for(const [x,y] of [[cx-25,cy-30],[cx+24,cy-31],[cx-26,cy+32],[cx+25,cy+31]])lantern(x,y);
-const place=(id,x,y)=>{const e=document.getElementById(id);e.style.left=`${x*S}px`;e.style.top=`${y*S}px`};place('label-hermes',cx,cy);place('label-forge',cx-62,cy-69);place('label-quarter',cx+63,cy-60);place('label-library',cx-58,cy+101);place('label-arena',cx+60,cy+91);place('label-gate',gx,gy-16);place('label-owner',cx,cy+32);
+const L={keep:{x:W*.49,y:H*.42},forge:{x:W*.27,y:H*.22},quarter:{x:W*.76,y:H*.25},library:{x:W*.27,y:H*.67},arena:{x:W*.73,y:H*.68},gate:{x:W*.64,y:H*.35}};
+// West coast: quiet edge, not a competing district.
+g.fillStyle=P.water;g.beginPath();g.moveTo(0,0);for(let y=0;y<=H;y+=6)g.lineTo(W*.09+Math.sin(y*.075)*5,y);g.lineTo(0,H);g.closePath();g.fill();for(let y=6;y<H;y+=10)ln(2,y,W*.07+Math.sin(y*.075)*3,y,P.water2,1);for(let i=0;i<7;i++){const x=5+(i*9)%Math.max(10,W*.06),y=42+(i*43)%(H-80);q(x,y,4,2,'#6f9a68');q(x+2,y-1,1,1,'#e7b2c2')}
+// A real river separates Quiet Quarter and creates the owner gate crossing.
+river([[W*.72,0],[W*.69,H*.16],[W*.66,H*.29],[L.gate.x,L.gate.y],[W*.62,H*.52],[W*.67,H*.72],[W*.63,H]],17);
+// Forge highland and Proof plateau establish geography before structures.
+for(let i=0;i<9;i++)rock(W*.13+i*W*.035,H*.11+(i%3)*5,.8+(i%2)*.2);for(let i=0;i<8;i++)rock(W*.60+i*W*.035,H*.79+(i%2)*4,.75);
+// Roads bend with terrain and terminate at authored entrances.
+const keepDoor=[L.keep.x,L.keep.y+18];path([keepDoor,[W*.40,H*.35],[L.forge.x,L.forge.y+18]],8);path([[L.keep.x+8,L.keep.y+12],[L.gate.x-12,L.gate.y],[L.gate.x+12,L.gate.y],[L.quarter.x,L.quarter.y+16]],8);path([[L.keep.x-6,L.keep.y+18],[W*.39,H*.57],[L.library.x,L.library.y+17]],8);path([[L.keep.x+7,L.keep.y+18],[W*.58,H*.57],[L.arena.x,L.arena.y]],8);path([[L.quarter.x,L.quarter.y+18],[W*.76,H*.49],[L.arena.x,L.arena.y-14]],5);
+// Authored vegetation clusters leave roads and landmark silhouettes readable.
+const trees=[[.14,.18],[.17,.24],[.13,.31],[.20,.35],[.34,.13],[.39,.16],[.42,.22],[.12,.55],[.17,.59],[.12,.66],[.18,.75],[.34,.61],[.36,.69],[.34,.77],[.86,.13],[.90,.20],[.88,.29],[.84,.47],[.87,.55],[.88,.65],[.84,.76],[.46,.82],[.52,.79],[.55,.86]];for(const [x,y] of trees)tree(W*x,H*y,(Math.round((x+y)*100)%3===0)?.8:1);
+for(const [x,y,k] of [[.17,.69,'#d98b9c'],[.21,.72,P.gold],[.31,.71,'#83b6d5'],[.36,.73,'#d98b9c'],[.71,.31,P.gold],[.77,.34,'#d98b9c'],[.82,.31,'#83b6d5'],[.71,.74,P.gold],[.77,.75,'#d98b9c']])for(let i=0;i<3;i++)flower(W*x+i*3,H*y+(i%2)*2,k);
+// District structures and local props.
+citadel(L.keep.x,L.keep.y);forge(L.forge.x,L.forge.y);quarter(L.quarter.x,L.quarter.y);library(L.library.x,L.library.y);arena(L.arena.x,L.arena.y);
+for(const [x,y] of [[L.forge.x-25,L.forge.y+15],[L.forge.x+23,L.forge.y+18],[L.forge.x-20,L.forge.y-16]])rock(x,y,.8);crate(L.forge.x+25,L.forge.y+13);crate(L.quarter.x-32,L.quarter.y+12);q(L.library.x+20,L.library.y+17,11,3,P.water2);q(L.library.x+22,L.library.y+15,7,2,P.water);fence(L.library.x-29,L.library.y+22,58);
+// The bridge and seal now physically span the river.
+const gx=L.gate.x,gy=L.gate.y;q(gx-13,gy-5,26,10,P.wood);for(let xx=-11;xx<=11;xx+=4)q(gx+xx,gy-4,2,8,P.wood2);q(gx-13,gy-7,26,2,P.stone);q(gx-13,gy+5,26,2,P.stone);q(gx+7,gy-11,5,8,P.red);q(gx+8,gy-13,3,3,'#e9b09e');
+// Owner and agents occupy their districts rather than arbitrary map points.
+sprite(L.keep.x,L.keep.y+36,'#e6e0cf',0);sprite(L.forge.x-9+Math.sin(now*.0005)*7,L.forge.y+23,'#bd6851',1);sprite(L.quarter.x+12+Math.sin(now*.00035)*6,L.quarter.y+23,'#d4ae5f',2);sprite(L.library.x+6,L.library.y+28+Math.sin(now*.0004)*5,'#588c78',3);sprite(L.arena.x-8-Math.sin(now*.00055)*6,L.arena.y+23,'#7288a8',4);bird(L.keep.x+Math.sin(now*.0007)*27,L.keep.y-34+Math.cos(now*.0009)*8);
+// World-native progress and lighting cues.
+q(L.forge.x-20,L.forge.y-35,2,18,P.wood);q(L.forge.x-18,L.forge.y-34,13,7,P.gold);q(L.forge.x-6,L.forge.y-34,3,3,P.gold);tx('!',L.forge.x-13,L.forge.y-30,P.ink,6);for(const [x,y] of [[L.keep.x-24,L.keep.y+5],[L.keep.x+24,L.keep.y+4],[L.library.x+24,L.library.y-2],[L.arena.x-25,L.arena.y-8]])lantern(x,y);
+const place=(id,x,y)=>{const e=document.getElementById(id);e.style.left=`${x*S}px`;e.style.top=`${y*S}px`};place('label-hermes',L.keep.x,L.keep.y+25);place('label-forge',L.forge.x,L.forge.y+23);place('label-quarter',L.quarter.x+3,L.quarter.y+24);place('label-library',L.library.x,L.library.y+25);place('label-arena',L.arena.x,L.arena.y+21);place('label-gate',gx,gy-16);place('label-owner',L.keep.x,L.keep.y+57);
 requestAnimationFrame(draw)}addEventListener('resize',resize);resize();draw();
 </script></body></html>
