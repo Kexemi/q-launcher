@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://telegram.org; style-src 'self'; img-src 'self' data:; connect-src 'self' https://*.trycloudflare.com http://127.0.0.1:*; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="theme-color" content="#171318">
+  <title>Barb Taste</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="app.css">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="capsule-runtime.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="app-shell" id="app" aria-busy="true">
+    <header class="topbar">
+      <button class="back-button" id="backButton" type="button" aria-label="Review the previous line" disabled>←</button>
+      <div class="identity">
+        <span class="eyebrow">BARB</span>
+        <strong>Taste</strong>
+      </div>
+      <span class="progress-label" id="progressLabel">—</span>
+    </header>
+
+    <div class="progress-track" role="progressbar" aria-label="Taste round progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressTrack">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <section class="loading-panel" id="loadingPanel" aria-live="polite">
+      <div class="pulse-mark" aria-hidden="true">B</div>
+      <p id="loadingText">Opening your taste round…</p>
+    </section>
+
+    <section class="taste-card" id="tasteCard" hidden>
+      <p class="environment" id="environment">ORIGINAL POST · Cold timeline · no parent, quote, image, or extra context</p>
+      <blockquote class="candidate" id="candidateText"></blockquote>
+      <p class="question" id="question">Would you publish this exact text as-is?</p>
+    </section>
+
+    <section class="complete-panel" id="completePanel" hidden aria-live="polite">
+      <span class="complete-mark" aria-hidden="true">✓</span>
+      <h1>Round saved</h1>
+      <p>Your labels are already folded into Barb. Nothing else to submit.</p>
+      <div class="count-row" aria-label="Taste counts">
+        <div><strong id="keepCount">0</strong><span>Keep</span></div>
+        <div><strong id="maybeCount">0</strong><span>Maybe</span></div>
+        <div><strong id="killCount">0</strong><span>Kill</span></div>
+      </div>
+      <button class="secondary-action" id="reviewButton" type="button">Review from start</button>
+      <button class="close-action" id="closeButton" type="button">Close</button>
+    </section>
+
+    <section class="error-panel" id="errorPanel" hidden role="alert">
+      <span class="error-mark" aria-hidden="true">!</span>
+      <h1>Couldn’t open Barb</h1>
+      <p id="errorText">Open this from the Barb button in Telegram.</p>
+      <button class="secondary-action" id="retryButton" type="button">Try again</button>
+    </section>
+
+    <footer class="action-dock" id="actionDock" hidden>
+      <button class="choice keep" data-choice="keep" type="button"><span aria-hidden="true">✓</span>Keep</button>
+      <button class="choice maybe" data-choice="maybe" type="button"><span aria-hidden="true">•</span>Maybe</button>
+      <button class="choice kill" data-choice="kill" type="button"><span aria-hidden="true">×</span>Kill</button>
+      <p class="authority-note">Nothing here posts to X. These are taste labels, not batch approval.</p>
+    </footer>
+  </main>
+</body>
+</html>
