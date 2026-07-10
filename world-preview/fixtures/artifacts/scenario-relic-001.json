@@ -1,0 +1,17 @@
+{
+  "schema": "aios.scenario.proof-relic.v1",
+  "source_mode": "SCENARIO_FIXTURE",
+  "artifact_id": "scenario-relic-001",
+  "quest_id": "scenario-quest-001",
+  "visible_as": "proof_relic",
+  "payload": "productive-world-scenario-v1",
+  "output_hash": "6b97d4c66c7daf0182542fa986586b415f396d613c0b77091357a485509a8bc0",
+  "proof_status": "source_backed",
+  "checks": [
+    "intent_commissioned",
+    "agent_arrived_forge",
+    "driver_finished",
+    "proof_requirement_matched"
+  ],
+  "boundary": "Scenario artifact only. No model call, workflow mutation, external action, or live-work claim."
+}

@@ -1,0 +1,10 @@
+{
+  "schema": "aios.scenario.driver-record.v1",
+  "source_mode": "SCENARIO_FIXTURE",
+  "driver_id": "fixture-driver-001",
+  "quest_id": "scenario-quest-001",
+  "status": "completed",
+  "output_artifact_id": "scenario-relic-001",
+  "output_hash": "6b97d4c66c7daf0182542fa986586b415f396d613c0b77091357a485509a8bc0",
+  "boundary": "State transitions are controlled by the local scenario clock."
+}
