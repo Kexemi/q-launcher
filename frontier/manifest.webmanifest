@@ -1,0 +1,12 @@
+{
+  "name": "Claude Corps Decisions",
+  "short_name": "Claude Corps",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07070b",
+  "theme_color": "#07070b",
+  "icons": [
+    {"src": "../icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}

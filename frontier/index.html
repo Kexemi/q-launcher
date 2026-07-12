@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Claude Corps">
+<link rel="apple-touch-icon" href="../icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='34' fill='none' stroke='%2346b984' stroke-width='9'/%3E%3Ccircle cx='50' cy='50' r='10' fill='%23c9a96a'/%3E%3C/svg%3E">
+<title>AI-OS · Decisions</title>
+<style>
+  :root{
+    --bg:#07070b; --flat:#131318;
+    --panel:rgba(24,24,31,.72); --panel2:rgba(31,31,40,.55);
+    --line:rgba(255,255,255,.065); --line2:rgba(255,255,255,.13);
+    --ink:#ede9df; --ink2:#a9a49b; --ink3:#74716a;
+    --jade:#4cc492; --jade-dim:#2a5e46;
+    --gold:#d4b177; --gold-dim:#8a7448; --gold-hot:#ecd6a4;
+    --amber:#d9a441; --red:#d06552;
+    --mono:"Cascadia Mono","Consolas",ui-monospace,monospace;
+    --serif:"Constantia","Palatino Linotype",Georgia,serif;
+    --sans:"Segoe UI Variable Text","Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
+  body{
+    background:
+      radial-gradient(130% 55% at 50% -18%, rgba(76,196,146,.085), transparent 62%),
+      radial-gradient(80% 42% at 88% -4%, rgba(212,177,119,.075), transparent 58%),
+      linear-gradient(180deg,#0b0b12, var(--bg) 34%);
+    background-attachment:fixed;
+    color:var(--ink); font-family:var(--sans); font-size:15px; line-height:1.55;
+    min-height:100vh; max-width:620px; margin:0 auto;
+    padding:max(env(safe-area-inset-top),14px) 16px calc(100px + env(safe-area-inset-bottom));
+    -webkit-text-size-adjust:100%; overflow-x:clip;
+  }
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.05;z-index:1;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E")}
+
+  /* ---- header ---- */
+  header{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:8px 0 14px;position:relative;flex-wrap:wrap}
+  .wordmark{font-family:var(--serif);font-size:22px;letter-spacing:.4px;color:var(--ink);
+    display:inline-flex;align-items:baseline;gap:8px;text-decoration:none;
+    white-space:nowrap;flex:none}
+  .wordmark em{font-style:italic;color:var(--gold);font-size:15px}
+  .progress{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--ink3);
+    text-transform:uppercase;white-space:nowrap}
+  .progress b{color:var(--gold);font-weight:500}
+  #pulse{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9.5px;
+    letter-spacing:.09em;text-transform:uppercase;color:var(--ink3)}
+  #pulse .p{width:6px;height:6px;border-radius:50%;background:#4a4a52}
+  #pulse.live .p{background:var(--jade);box-shadow:0 0 7px var(--jade);animation:beat 2.6s ease-in-out infinite}
+  #pulse.warn .p{background:var(--amber);box-shadow:0 0 7px var(--amber)}
+  @keyframes beat{0%,100%{opacity:.55}50%{opacity:1}}
+  .bar{height:2px;background:var(--line2);border-radius:2px;overflow:hidden;margin:0 0 22px}
+  .bar>div{height:100%;width:0%;transition:width .4s cubic-bezier(.3,.7,.3,1);
+    background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-hot))}
+
+  /* ---- send chip ---- */
+  #sendchip{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:999px;
+    border:1px solid var(--line2);background:var(--panel2);cursor:pointer;
+    font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3);
+    transition:border-color .25s,color .25s}
+  #sendchip .d{width:7px;height:7px;border-radius:50%;background:#4a4a52;transition:all .25s}
+  #sendchip.armed{border-color:var(--jade);color:var(--jade)}
+  #sendchip.armed .d{background:var(--jade);box-shadow:0 0 8px var(--jade)}
+
+  /* ---- card ---- */
+  .card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:18px;
+    padding:24px 22px 20px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    box-shadow:0 18px 44px rgba(0,0,0,.35);
+    animation:rise .38s cubic-bezier(.25,.8,.35,1) both}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .card::before{content:"";position:absolute;inset:0 auto 0 0;width:2px;border-radius:2px;
+    background:linear-gradient(180deg,transparent,var(--gold-dim),transparent)}
+  .chips{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+  .chip{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+    padding:4px 10px;border-radius:999px;border:1px solid var(--line2);color:var(--ink3)}
+  .chip.p0{border-color:rgba(217,164,65,.5);color:var(--amber)}
+  .chip.legal{border-color:rgba(208,101,82,.5);color:var(--red)}
+  .chip.broker{border-color:rgba(76,196,146,.5);color:var(--jade)}
+  .q{font-family:var(--serif);font-size:21px;font-weight:500;line-height:1.32;
+    margin-bottom:10px;overflow-wrap:anywhere}
+  .why{color:var(--ink2);font-size:14px;margin-bottom:18px;overflow-wrap:anywhere}
+  .why a,.q a{color:var(--jade);text-decoration:none;border-bottom:1px solid var(--jade-dim)}
+
+  /* ---- options ---- */
+  .opts{display:flex;flex-direction:column;gap:10px}
+  button.opt{min-height:54px;width:100%;text-align:left;padding:14px 16px;border-radius:14px;
+    border:1px solid var(--line2);background:var(--panel2);color:var(--ink);
+    font-family:var(--sans);font-size:15.5px;line-height:1.4;cursor:pointer;
+    transition:border-color .2s,transform .06s,background .2s}
+  button.opt:active{transform:scale(.985)}
+  button.opt b{font-family:var(--mono);font-size:12px;color:var(--ink3);margin-right:7px;font-weight:500}
+  button.opt .cons{display:block;color:var(--ink3);font-size:12.5px;margin-top:4px}
+  button.opt.rec{border-color:rgba(212,177,119,.55);
+    background:linear-gradient(180deg,rgba(212,177,119,.10),rgba(212,177,119,.03))}
+  button.opt.rec b{color:var(--gold)}
+  .recwhy{display:block;font-family:var(--serif);font-style:italic;font-size:13.5px;
+    color:var(--gold-hot);margin-top:6px}
+  .recwhy::before{content:"★ ";font-style:normal;font-size:11px}
+  button.opt.sel{outline:1.5px solid var(--jade);outline-offset:-1px}
+
+  /* ---- inputs ---- */
+  .hint{font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--ink3);margin-bottom:10px}
+  .hint .recwhy{display:inline;font-size:13px;margin:0}
+  input[type=number],input[type=text]{width:100%;min-height:54px;background:var(--panel2);color:var(--ink);
+    border:1px solid var(--line2);border-radius:14px;padding:12px 16px;font-size:17px;font-family:var(--sans)}
+  input:focus{outline:1.5px solid var(--gold-dim)}
+  input[type=range]{width:100%;margin:16px 0 8px;accent-color:var(--gold)}
+  .numwrap{display:flex;gap:10px;align-items:center;margin:6px 0 2px}
+  .numwrap button{width:54px;height:54px;font-size:22px;border-radius:14px;border:1px solid var(--line2);
+    background:var(--panel2);color:var(--ink2);cursor:pointer;flex:none;transition:transform .06s}
+  .numwrap button:active{transform:scale(.94)}
+  .primary{min-height:52px;width:100%;border-radius:13px;border:none;cursor:pointer;margin-top:14px;
+    background:linear-gradient(180deg,var(--gold-hot),var(--gold));color:#191509;
+    font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+    box-shadow:0 6px 22px rgba(212,177,119,.18);transition:transform .06s}
+  .primary:active{transform:scale(.985)}
+  .primary.jade{background:linear-gradient(180deg,#6bd6ab,var(--jade));color:#0a1a12;
+    box-shadow:0 6px 22px rgba(76,196,146,.18)}
+
+  /* ---- footer actions ---- */
+  .foot{display:flex;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+  .foot button{flex:1;min-height:42px;border-radius:11px;border:1px solid transparent;background:transparent;
+    color:var(--ink3);font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    cursor:pointer;transition:color .2s,border-color .2s}
+  .foot button:active{color:var(--ink2);border-color:var(--line2)}
+  .notewrap{margin-top:14px}
+  .notewrap summary{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--ink3);cursor:pointer;list-style:none}
+  .notewrap summary::before{content:"+ "}
+  .notewrap[open] summary::before{content:"− "}
+  .notewrap input{margin-top:10px;font-size:14.5px;min-height:46px}
+
+  /* ---- summary / locked / toast ---- */
+  .done{text-align:center;padding:34px 10px}
+  .done h2{font-family:var(--serif);font-style:italic;font-weight:500;font-size:24px;margin-bottom:10px}
+  .done .sub{color:var(--ink2);font-size:14px}
+  .sess{text-align:left;margin:20px 0 4px;list-style:none}
+  .sess li{color:var(--ink2);font-size:13.5px;padding:8px 2px;border-bottom:1px solid var(--line);
+    overflow-wrap:anywhere}
+  .sess li:last-child{border-bottom:none}
+  .sess b{color:var(--gold-hot);font-family:var(--mono);font-size:12px;font-weight:500}
+  .locked{opacity:.6}
+  .lockmsg{font-family:var(--mono);font-size:12px;color:var(--amber);margin-top:8px;letter-spacing:.03em}
+  #campaign-plan{display:none;max-width:680px;margin:14px auto 0;padding:12px 16px;border:1px solid var(--line);
+    border-radius:14px;background:rgba(255,255,255,.018);color:var(--ink3);font-size:12.5px;line-height:1.5}
+  #campaign-plan strong{color:var(--ink2);font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase}
+  #toast{position:fixed;left:50%;bottom:calc(104px + env(safe-area-inset-bottom));z-index:60;
+    transform:translateX(-50%) translateY(20px);opacity:0;transition:all .3s;
+    background:var(--flat);border:1px solid var(--line2);color:var(--ink);
+    padding:11px 20px;border-radius:12px;font-size:13.5px;font-family:var(--mono);
+    box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:86vw;text-align:center}
+  #toast.on{opacity:1;transform:translateX(-50%)}
+
+  /* ---- bottom tab bar (matches console) ---- */
+  #tabbar{position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;gap:6px;
+    background:rgba(9,9,14,.86);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    border-top:1px solid rgba(255,255,255,.09);
+    padding:8px 12px calc(9px + env(safe-area-inset-bottom))}
+  .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--ink3);
+    font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:6px 0 4px;
+    border-radius:12px;position:relative;transition:color .2s}
+  .tab svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .tab.on{color:var(--gold-hot)}
+  .tab.on::before{content:"";position:absolute;top:-9px;left:50%;transform:translateX(-50%);width:26px;height:2px;
+    border-radius:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+</style>
+</head>
+<body>
+<header>
+  <a class="wordmark" id="homelink" href="#">AI-OS <em>decisions</em></a>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end">
+    <div id="pulse"><span class="p"></span><span id="pulsetxt">checking</span></div>
+    <div id="sendchip"><span class="d"></span><span id="sendtxt">…</span></div>
+    <div class="progress" id="prog"></div>
+  </div>
+</header>
+<div class="bar"><div id="barfill"></div></div>
+<div id="campaign-plan"><strong>Later gates</strong><br>Secure contact details · Final resume and uploads · Optional public build link · Final submission approval</div>
+<div id="stage"></div>
+<div id="toast"></div>
+
+<nav id="tabbar" aria-label="Console sections">
+  <a class="tab on" href="#">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 12.2l2.4 2.4 4.6-5.2"/></svg>
+    <span>Decisions</span></a>
+  <a class="tab" id="tab-fac" href="#">
+    <svg viewBox="0 0 24 24"><path d="M4 20V10l5 3.4V10l5 3.4V5.5h6V20z"/></svg>
+    <span>Factory</span></a>
+  <a class="tab" id="tab-sys" href="#">
+    <svg viewBox="0 0 24 24"><rect x="4" y="4.5" width="16" height="6" rx="1.6"/><rect x="4" y="13.5" width="16" height="6" rx="1.6"/><circle cx="7.6" cy="7.5" r=".95"/><circle cx="7.6" cy="16.5" r=".95"/></svg>
+    <span>System</span></a>
+  <a class="tab" id="tab-surf" href="#">
+    <svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2"/><path d="M3.5 9.5h17M6.3 7.3h.01M8.6 7.3h.01"/></svg>
+    <span>Surfaces</span></a>
+</nav>
+
+<script>
+"use strict";
+// Permanent same-origin shell; backend address rotates, this URL does not.
+let BASE = "";
+const CAMPAIGN = "frontier-lab-acceptance";
+async function initApiBase() {
+  const tok = localStorage.getItem("aios_token");
+  if (!tok) { location.replace("../#frontier"); throw new Error("pairing required"); }
+  const route = await fetch("../url.json?x=" + Date.now(), {cache:"no-store"}).then(r => r.json());
+  if (!route.url) throw new Error("AI-OS address unavailable");
+  BASE = route.url.replace(/\/+$/, "") + "/t/" + tok;
+  document.getElementById("homelink").href = "../#frontier";
+  document.getElementById("tab-fac").href = BASE + "/#factory";
+  document.getElementById("tab-sys").href = BASE + "/#system";
+  document.getElementById("tab-surf").href = BASE + "/#surfaces";
+}
+const api = (p, opts) => fetch(BASE + p, opts).then(r => r.json());
+
+let queue = [], answeredCount = 0, total = 0, session = [];
+
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("on");
+  setTimeout(() => t.classList.remove("on"), 2400);
+}
+
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+// Vault paths cited in cards become tap-to-open artifact links (owner J04:
+// the thing being approved must be in front of the approver).
+const PATH_RE = /((?:Obsidian Vault|Vault Inbox|Inbox|Logs|System|Repos|Docs|Scripts)\/[^\s,;:"'<>()\[\]]+)/g;
+function linkify(s) {
+  return esc(s).replace(PATH_RE, m =>
+    `<a href="${BASE}/artifact?path=${encodeURIComponent(m)}">${m}</a>`);
+}
+
+function setProgress() {
+  document.getElementById("prog").innerHTML = `<b>${answeredCount}</b>&thinsp;/&thinsp;${total}`;
+  document.getElementById("barfill").style.width = total ? (100 * answeredCount / total) + "%" : "0%";
+}
+
+/* ---------- send chip ---------- */
+async function refreshChip() {
+  try {
+    const s = await api("/api/send-permission");
+    const chip = document.getElementById("sendchip");
+    const unmet = Object.entries(s.prerequisites || {}).filter(([, v]) => !v).map(([k]) => k);
+    chip.classList.toggle("armed", !!s.armed);
+    document.getElementById("sendtxt").textContent =
+      s.armed ? "armed " + (s.armed_at || "").slice(0, 10) : `off · ${2 - unmet.length}/2`;
+    chip.onclick = async () => {
+      if (s.armed) {
+        if (!confirm("Disarm sending? The system stops sending on your behalf immediately.")) return;
+        await api("/api/send-permission", {method: "POST", body: JSON.stringify({action: "disarm"})});
+      } else {
+        if (unmet.length) { toast("Locked — needs: " + unmet.join(", ")); return; }
+        if (!confirm("ARM sending? Standing permission until you turn it off.")) return;
+        const r = await api("/api/send-permission", {method: "POST", body: JSON.stringify({action: "arm"})});
+        if (!r.ok) toast(r.error || "refused");
+      }
+      refreshChip();
+    };
+  } catch (e) { /* chip stays in loading state */ }
+}
+
+/* ---------- cards ---------- */
+async function load() {
+  const endpoint = "/api/cards" + (CAMPAIGN ? "?campaign=" + encodeURIComponent(CAMPAIGN) : "");
+  const data = await api(endpoint);
+  const allCards = data.cards || [];
+  queue = CAMPAIGN ? allCards.filter(card => String(card.campaign_id || "") === CAMPAIGN) : allCards;
+  answeredCount = data.answered || 0;
+  total = data.total || 0;
+  if (CAMPAIGN) {
+    document.querySelector(".wordmark em").textContent = "campaign";
+    document.title = "AI-OS · Campaign decisions";
+    document.getElementById("campaign-plan").style.display = "block";
+  }
+  setProgress();
+  next();
+}
+
+function next() {
+  const stage = document.getElementById("stage");
+  const card = queue.shift();
+  if (!card) return summary();
+  stage.innerHTML = "";
+  stage.appendChild(render(card));
+  window.scrollTo(0, 0);
+}
+
+function chipHtml(txt, cls) { return `<span class="chip ${cls || ""}">${esc(txt)}</span>`; }
+
+function render(card) {
+  const el = document.createElement("div");
+  el.className = "card" + (card.locked ? " locked" : "");
+  const tagCls = card.tag === "LEGAL" ? "legal" : card.tag === "BROKER" ? "broker" : "";
+  el.innerHTML =
+    `<div class="chips">${chipHtml(card.priority, /P0/.test(card.priority) ? "p0" : "")}${chipHtml(card.tag, tagCls)}` +
+    (card.expires_at ? chipHtml("expires " + card.expires_at.slice(0, 10)) : "") + `</div>` +
+    `<div class="q">${linkify(card.question)}</div>` +
+    (card.why ? `<div class="why">${linkify(card.why)}</div>` : "");
+  const body = document.createElement("div");
+  if (card.locked) {
+    body.innerHTML = `<div class="lockmsg">locked — opens once a customer journey exists to walk through</div>`;
+  } else if (card.answer_type === "broker") {
+    body.appendChild(brokerButtons(card));
+  } else if (card.answer_type === "choice") {
+    body.appendChild(optButtons(card.options, card.rec, k => submit(card, k, el)));
+  } else if (card.answer_type === "yesno") {
+    const opts = card.yes_only ? [{k: "yes", label: "Yes — I approve"}]
+      : [{k: "yes", label: "Yes"}, {k: "no", label: "No"}];
+    body.appendChild(optButtons(opts, card.rec, k => submit(card, k, el)));
+  } else if (card.answer_type === "number") {
+    body.appendChild(numberWidget(card, el));
+  } else if (card.answer_type === "multi") {
+    body.appendChild(multiWidget(card, el));
+  } else {
+    body.appendChild(textWidget(card, el));
+  }
+  el.appendChild(body);
+  if (!card.locked && card.answer_type !== "broker") el.appendChild(noteBlock(el));
+  if (card.answer_type !== "broker") el.appendChild(footer(card)); // broker cards carry their own skip/later
+  return el;
+}
+
+function optButtons(options, rec, onPick) {
+  const wrap = document.createElement("div");
+  wrap.className = "opts";
+  (options || []).forEach(o => {
+    const b = document.createElement("button");
+    b.className = "opt";
+    const isRec = rec && rec.k && String(rec.k) === String(o.k);
+    if (isRec) b.classList.add("rec");
+    const keyLabel = /^(yes|no)$/i.test(String(o.k)) ? "" : `<b>${esc(o.k)}</b>`;
+    b.innerHTML = keyLabel + esc(o.label) +
+      (o.consequence ? `<span class="cons">${esc(o.consequence)}</span>` : "") +
+      (isRec ? `<span class="recwhy">${esc(rec.reason || "recommended")}</span>` : "");
+    b.onclick = () => onPick(o.k + ": " + o.label);
+    wrap.appendChild(b);
+  });
+  return wrap;
+}
+
+function brokerButtons(card) {
+  const wrap = document.createElement("div");
+  const go = document.createElement("button");
+  go.className = "primary jade"; go.textContent = "Approve";
+  go.onclick = () => decideBroker(card, "approve");
+  wrap.appendChild(go);
+  const f = document.createElement("div");
+  f.className = "foot";
+  [["Skip", "skip"], ["Later", "later"]].forEach(([label, act]) => {
+    const b = document.createElement("button"); b.textContent = label;
+    b.onclick = () => decideBroker(card, act);
+    f.appendChild(b);
+  });
+  wrap.appendChild(f);
+  return wrap;
+}
+
+function numberWidget(card, el) {
+  const wrap = document.createElement("div");
+  const hint = card.format || "";
+  const m = hint.match(/(\d+)\s*-\s*(\d+)/);
+  const lo = m ? +m[1] : 0, hi = m ? +m[2] : 100000;
+  const start = card.rec && card.rec.v != null ? card.rec.v : lo;
+  wrap.innerHTML = `<div class="hint">${esc(hint)}${card.rec && card.rec.v != null
+    ? ` <span class="recwhy">${esc(card.rec.v)} — ${esc(card.rec.reason || "")}</span>` : ""}</div>` +
+    (m ? `<input type="range" min="${lo}" max="${hi}" value="${start}">` : "");
+  const row = document.createElement("div");
+  row.className = "numwrap";
+  row.innerHTML = `<button type="button">−</button><input type="number" value="${start}"><button type="button">+</button>`;
+  wrap.appendChild(row);
+  const num = row.querySelector("input"), rng = wrap.querySelector("input[type=range]");
+  const [minus, plus] = row.querySelectorAll("button");
+  const step = hi - lo > 1000 ? 100 : 1;
+  minus.onclick = () => { num.value = +num.value - step; if (rng) rng.value = num.value; };
+  plus.onclick = () => { num.value = +num.value + step; if (rng) rng.value = num.value; };
+  if (rng) rng.oninput = () => { num.value = rng.value; };
+  const go = document.createElement("button");
+  go.className = "primary"; go.textContent = "Answer";
+  go.onclick = () => submit(card, +num.value, el);
+  wrap.appendChild(go);
+  return wrap;
+}
+
+function textWidget(card, el) {
+  const wrap = document.createElement("div");
+  wrap.innerHTML = `<div class="hint">${esc(card.format || "")}</div><input type="text" placeholder="type or dictate…">`;
+  const inp = wrap.querySelector("input");
+  const go = document.createElement("button");
+  go.className = "primary"; go.textContent = "Answer";
+  const send = () => { if (inp.value.trim()) submit(card, inp.value.trim(), el); };
+  go.onclick = send;
+  inp.addEventListener("keydown", e => { if (e.key === "Enter") send(); });
+  wrap.appendChild(go);
+  setTimeout(() => inp.focus(), 60);
+  return wrap;
+}
+
+function multiWidget(card, el) {
+  const wrap = document.createElement("div");
+  const picked = new Set();
+  const opts = optButtons(card.options, card.rec, null);
+  opts.querySelectorAll("button").forEach((b, i) => {
+    const o = card.options[i];
+    b.onclick = () => {
+      if (picked.has(o.k)) { picked.delete(o.k); b.classList.remove("sel"); }
+      else { picked.add(o.k); b.classList.add("sel"); }
+    };
+  });
+  wrap.appendChild(opts);
+  const go = document.createElement("button");
+  go.className = "primary"; go.textContent = "Confirm selection";
+  go.onclick = () => {
+    if (!picked.size) return toast("pick at least one");
+    const labels = card.options.filter(o => picked.has(o.k)).map(o => o.k + ": " + o.label);
+    submit(card, labels.join(" + "), el);
+  };
+  wrap.appendChild(go);
+  return wrap;
+}
+
+function noteBlock(el) {
+  const d = document.createElement("details");
+  d.className = "notewrap";
+  d.innerHTML = `<summary>note</summary><input type="text" placeholder="for the record…">`;
+  el._note = () => d.querySelector("input").value.trim();
+  return d;
+}
+
+function footer(card) {
+  const f = document.createElement("div");
+  f.className = "foot";
+  const mk = (label, fn) => { const b = document.createElement("button"); b.textContent = label; b.onclick = fn; return b; };
+  f.appendChild(mk("Skip", () => { queue.push(card); next(); }));
+  if (!card.locked && card.type === "bank") {
+    f.appendChild(mk("Later · 7d", async () => {
+      await api("/api/card-action", {method: "POST", body: JSON.stringify({qid: card.id, action: "later"})});
+      next();
+    }));
+    f.appendChild(mk("Need context", async () => {
+      const note = prompt("What context do you need? (optional)") || "";
+      await api("/api/card-action", {method: "POST", body: JSON.stringify({qid: card.id, action: "context", note})});
+      toast("queued for Hermes enrichment");
+      next();
+    }));
+  }
+  return f;
+}
+
+async function submit(card, answer, el) {
+  const note = el && el._note ? el._note() : "";
+  const r = await api("/api/answer", {method: "POST",
+    body: JSON.stringify({qid: card.id, answer, note})});
+  if (!r.ok) return toast(r.error || "failed");
+  answeredCount++; session.push({q: card.question, a: answer});
+  setProgress();
+  if (card.id === "WALKTHROUGH-APPROVAL") refreshChip();
+  next();
+}
+
+async function decideBroker(card, action) {
+  const r = await api("/api/decide", {method: "POST", body: JSON.stringify({qid: card.id, action})});
+  if (!r.ok) return toast(r.error || "failed");
+  session.push({q: card.question, a: action});
+  next();
+}
+
+function summary() {
+  const stage = document.getElementById("stage");
+  stage.innerHTML = `<div class="card done campaign-clear"><h2>Queue clear.</h2>
+    <div class="sub">${session.length ? "Recorded this session — every answer is now standing judgment:" : "Nothing is waiting on you."}</div>
+    <ul class="sess">${session.map(s => `<li><b>${esc(s.a)}</b> — ${esc(s.q)}</li>`).join("")}</ul>
+    <button class="primary" onclick="location.reload()">Refresh queue</button></div>`;
+}
+
+async function refreshPulse() {
+  try {
+    const h = await api("/api/health");
+    const el = document.getElementById("pulse");
+    const ok = h.server_ok && h.tunnel_ok;
+    el.className = ok ? "live" : "warn";
+    document.getElementById("pulsetxt").textContent = ok ? "systems live" : "check system";
+  } catch (e) {
+    document.getElementById("pulse").className = "warn";
+    document.getElementById("pulsetxt").textContent = "offline";
+  }
+}
+
+(async function bootFrontier(){
+  try {
+    await initApiBase();
+    refreshChip();
+    refreshPulse();
+    await load();
+  } catch (err) {
+    document.getElementById("stage").innerHTML = `<div class="card done"><h2>Reconnect AI-OS</h2><div class="sub">Open the stable launcher to pair this phone again.</div><button class="primary" onclick="location.href='../#frontier'">Open launcher</button></div>`;
+  }
+})();
+</script>
+</body>
+</html>

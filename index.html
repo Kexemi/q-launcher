@@ -80,7 +80,7 @@ function getPairCode(){
 }
 function showFail(msg){setBusy(false);$("msg").innerHTML=msg;$("retry").style.display="inline-block";}
 function fetchTunnel(){return fetch("url.json?x="+Date.now(),{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){if(!d.url)throw new Error("no console address published yet"); currentTunnel=d.url.replace(/\/+$/,""); return currentTunnel;});}
-function redirectWithToken(tok,pane){pane=sanitizePane(pane||localStorage.getItem(PANE_KEY)||"owneros"); try{localStorage.setItem(TOKEN_KEY,tok);localStorage.setItem(PANE_KEY,pane)}catch(e){} if(pane==="world"){location.replace(currentTunnel+"/t/"+tok+"/world");return;} location.replace(currentTunnel+"/t/"+tok+"/#"+pane);}
+function redirectWithToken(tok,pane){pane=sanitizePane(pane||localStorage.getItem(PANE_KEY)||"owneros"); try{localStorage.setItem(TOKEN_KEY,tok);localStorage.setItem(PANE_KEY,pane)}catch(e){} if(pane==="frontier"){location.replace(new URL("frontier/",location.href).href);return;} if(pane==="world"){location.replace(currentTunnel+"/t/"+tok+"/world");return;} location.replace(currentTunnel+"/t/"+tok+"/#"+pane);}
 function startPair(){
   setBusy(false); $("retry").style.display="none"; $("msg").textContent="pair this phone once";
   var code=getPairCode(), device=getDevice(), pane=sanitizePane(localStorage.getItem(PANE_KEY)||"owneros");
