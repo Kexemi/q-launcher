@@ -19,6 +19,8 @@ assert.match(html, /reconnect/i);
 assert.match(html, /AbortController|timeout/i);
 assert.doesNotMatch(html, /location\.replace\([^)]*currentTunnel/);
 assert.doesNotMatch(html, /href\s*=\s*BASE/);
+assert.doesNotMatch(html, /\/t\/"\+tok/);
+assert.match(html, /X-AIOS-Token/);
 assert.doesNotMatch(html, /One calm surface for the whole AI-OS organism/);
 assert.match(manifest.start_url, /^\.\//);
 assert.equal(manifest.display, 'standalone');
