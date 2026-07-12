@@ -1,0 +1,10 @@
+{
+  "name": "AI-OS",
+  "short_name": "AI-OS",
+  "start_url": "./#world",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#050b09",
+  "theme_color": "#07100e",
+  "icons": [{"src":"../icon.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]
+}

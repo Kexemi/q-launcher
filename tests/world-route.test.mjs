@@ -9,4 +9,5 @@ async function route(pane){const store=new Map([['aios_token','TESTTOKEN'],['aio
 assert.equal(await route('world'),'https://console.example/t/TESTTOKEN/world');
 assert.equal(await route('hermes'),'https://console.example/t/TESTTOKEN/#hermes');
 assert.equal(await route('frontier'),'https://kexemi.github.io/q-launcher/frontier/');
+assert.equal(await route('app'),'https://kexemi.github.io/q-launcher/app/');
 console.log('LAUNCHER_WORLD_ROUTE_PASS world=dedicated hermes=preserved frontier=stable-shell');
