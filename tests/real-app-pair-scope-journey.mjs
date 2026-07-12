@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import { chromium } from 'playwright';
+import { createServer } from 'node:http';
+import { readFile } from 'node:fs/promises';
+import { dirname, extname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const root=dirname(dirname(fileURLToPath(import.meta.url))),mime={'.html':'text/html','.json':'application/json','.png':'image/png','.webmanifest':'application/manifest+json'};
+const server=createServer(async(req,res)=>{try{let rel=(req.url||'/').split('?')[0];if(rel.endsWith('/'))rel+='index.html';const p=join(root,rel.replace(/^\//,'')),body=await readFile(p);res.writeHead(200,{'Content-Type':mime[extname(p)]||'text/plain'});res.end(body)}catch{res.writeHead(404);res.end('not found')}});
+await new Promise(r=>server.listen(8767,'127.0.0.1',r));
+const browser=await chromium.launch({headless:true}),page=await browser.newPage({viewport:{width:390,height:665}}),errors=[];page.on('pageerror',e=>errors.push(String(e)));
+await page.route('**/url.json*',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({url:'https://mock.console'})}));
+await page.route('**/api/pair/request',r=>r.fulfill({status:200,contentType:'application/json',body:'{"ok":true}'}));
+await page.route('**/api/pair/status*',r=>r.fulfill({status:200,contentType:'application/json',body:'{"pending":true}'}));
+await page.goto('http://127.0.0.1:8767/app/#world');await page.getByText('Reconnect this phone').waitFor();await page.getByRole('link',{name:'Open pairing'}).click();await page.getByText('pair this phone once').waitFor();
+assert.equal(new URL(page.url()).origin,'http://127.0.0.1:8767');assert.equal(new URL(page.url()).pathname,'/');assert.deepEqual(errors,[]);
+console.log(JSON.stringify({pass:true,pairing_origin_preserved:true,scope:'../',errors}));await browser.close();await new Promise(r=>server.close(r));
