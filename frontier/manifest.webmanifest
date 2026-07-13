@@ -1,11 +1,11 @@
 {
-  "name": "Claude Corps Decisions",
-  "short_name": "Claude Corps",
-  "start_url": "./",
-  "scope": "./",
+  "name": "AI-OS",
+  "short_name": "AI-OS",
+  "start_url": "../app/#world",
+  "scope": "../",
   "display": "standalone",
-  "background_color": "#07070b",
-  "theme_color": "#07070b",
+  "background_color": "#050b09",
+  "theme_color": "#07100e",
   "icons": [
     {"src": "../icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
   ]
