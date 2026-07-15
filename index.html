@@ -45,7 +45,7 @@
 // use a short pairing code approved from the already-trusted console side.
 var TOKEN_KEY="aios_token", DEVICE_KEY="aios_device", PANE_KEY="aios_pane";
 var PAIR_CODE_KEY="aios_pair_code", PAIR_AT_KEY="aios_pair_created_at";
-var pairTimer=null, currentTunnel=null;
+var pairTimer=null, currentTunnel=null, currentPair=null, pairCheckActive=false, pairCheckQueued=false;
 function $(id){return document.getElementById(id)}
 function setBusy(on){$("ring").style.display=on?"":"none"}
 function sanitizePane(v){v=String(v||"").replace(/[^A-Za-z0-9_-]/g,"");return v||"owneros"}
@@ -85,21 +85,46 @@ function startPair(){
   setBusy(false); $("retry").style.display="none"; $("msg").textContent="pair this phone once";
   var code=getPairCode(), device=getDevice(), pane=sanitizePane(localStorage.getItem(PANE_KEY)||"owneros");
   $("pair").style.display="block";
-  $("pair").innerHTML='<div class="hint">Send this code to Hermes:</div><div class="code">'+code+'</div><div class="hint"><strong>PAIR '+code+'</strong><br>Return to this same page after approval. The code stays valid for this phone.</div><div class="row"><button onclick="copyPair(\''+code+'\')">Copy code</button><button class="ghost" onclick="go()">Check again</button></div>';
+  $("pair").innerHTML='<div class="hint">Send this code to Hermes:</div><div class="code">'+code+'</div><div class="hint"><strong>PAIR '+code+'</strong><br>Return to this same page after approval. It connects automatically.</div><div class="row"><button onclick="copyPair(\''+code+'\')">Copy code</button><button class="ghost" onclick="go()">Check again</button></div>';
   fetch(currentTunnel+"/api/pair/request",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code:code,device:device,pane:pane})})
     .then(function(r){return r.json()}).then(function(d){if(!d.ok)throw new Error(d.error||"pair request failed"); pollPair(code,device);})
     .catch(function(e){showFail("pair request failed — retry after the PC tunnel is awake.<br>"+String(e.message||e));});
 }
+function finishPairCheck(result){
+  pairCheckActive=false;
+  if(pairCheckQueued){pairCheckQueued=false;setTimeout(checkPairNow,0)}
+  return result;
+}
+function checkPairNow(){
+  if(!currentTunnel||!currentPair)return Promise.resolve(false);
+  if(pairCheckActive){pairCheckQueued=true;return Promise.resolve(false)}
+  pairCheckActive=true;
+  var code=currentPair.code,device=currentPair.device;
+  return fetch(currentTunnel+"/api/pair/status?code="+encodeURIComponent(code)+"&device="+encodeURIComponent(device),{cache:"no-store"})
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if(!currentPair||currentPair.code!==code||currentPair.device!==device)return false;
+      if(d.approved&&d.token){
+        clearInterval(pairTimer);pairTimer=null;currentPair=null;clearPairCode();
+        $("msg").textContent="approved — connecting…";
+        redirectWithToken(d.token,d.pane);return true;
+      }
+      if(d.pending===false){
+        clearInterval(pairTimer);pairTimer=null;currentPair=null;clearPairCode();startPair();
+      }
+      return false;
+    })
+    .then(finishPairCheck,function(){return finishPairCheck(false)});
+}
 function pollPair(code,device){
   clearInterval(pairTimer);
-  function check(){
-    fetch(currentTunnel+"/api/pair/status?code="+encodeURIComponent(code)+"&device="+encodeURIComponent(device),{cache:"no-store"})
-      .then(function(r){return r.json()}).then(function(d){
-        if(d.approved&&d.token){clearInterval(pairTimer);clearPairCode();redirectWithToken(d.token,d.pane);return;}
-        if(d.pending===false){clearInterval(pairTimer);clearPairCode();startPair();}
-      }).catch(function(){});
-  }
-  check(); pairTimer=setInterval(check,2500);
+  currentPair={code:code,device:device};
+  checkPairNow(); pairTimer=setInterval(checkPairNow,2500);
+}
+function resumePairing(){
+  if(document.visibilityState==="hidden"||!currentPair)return;
+  $("msg").textContent="checking approval…";
+  checkPairNow();
 }
 function copyPair(code){try{navigator.clipboard.writeText("PAIR "+code)}catch(e){} }
 function go(){
@@ -112,6 +137,12 @@ function go(){
     redirectWithToken(t,localStorage.getItem(PANE_KEY)||"owneros");
   }).catch(function(){showFail("can't reach the address file — check connection, then retry. if the PC just restarted, the new address lands here within ~1 minute.");});
 }
+if(typeof addEventListener==="function"){
+  addEventListener("pageshow",resumePairing);
+  addEventListener("focus",resumePairing);
+  addEventListener("online",resumePairing);
+}
+if(typeof document!=="undefined"&&typeof document.addEventListener==="function")document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")resumePairing()});
 go();
 </script>
 </body>

@@ -13,6 +13,8 @@ let approved = false;
 
 function boot(seed) {
   const elements = new Map();
+  const windowListeners = new Map();
+  const documentListeners = new Map();
   const el = id => {
     if (!elements.has(id)) elements.set(id, { id, style: {}, innerHTML: '', textContent: '' });
     return elements.get(id);
@@ -24,7 +26,12 @@ function boot(seed) {
   };
   const context = {
     console, URL, URLSearchParams, Uint8Array, Date,
-    document: { getElementById: el },
+    document: {
+      getElementById: el,
+      visibilityState: 'visible',
+      addEventListener(type, handler) { documentListeners.set(type, handler); },
+    },
+    addEventListener(type, handler) { windowListeners.set(type, handler); },
     history: { replaceState() {} },
     location,
     navigator: { clipboard: { writeText() {} } },
@@ -53,7 +60,7 @@ function boot(seed) {
     setInterval() { return 1; }, clearInterval() {}, setTimeout,
   };
   vm.runInNewContext(source, context, { filename: 'launcher-index-script.js' });
-  return { context, location, elements };
+  return { context, location, elements, windowListeners, documentListeners };
 }
 
 const first = boot(1);
@@ -68,9 +75,13 @@ assert.equal(store.get('aios_pair_code'), firstCode, 'reload must reuse the pend
 assert.equal(requests.at(-1).code, firstCode, 'server request must reuse the same code after reload');
 
 approved = true;
-second.context.pollPair(firstCode, 'device-12345678');
+assert.equal(typeof second.windowListeners.get('pageshow'), 'function', 'returning from Telegram must have a pageshow pairing hook');
+assert.equal(typeof second.windowListeners.get('focus'), 'function', 'returning from Telegram must have a focus pairing hook');
+assert.equal(typeof second.windowListeners.get('online'), 'function', 'network return must resume pairing');
+assert.equal(typeof second.documentListeners.get('visibilitychange'), 'function', 'foreground visibility must resume pairing');
+second.windowListeners.get('pageshow')();
 await new Promise(r => setTimeout(r, 20));
 assert.equal(store.get('aios_token'), 'TESTTOKEN');
 assert.equal(store.has('aios_pair_code'), false, 'approved pending code must be cleared');
 assert.match(second.location.replaced, /\/t\/TESTTOKEN\/#hermes$/);
-console.log('PAIRING_RELOAD_PASS');
+console.log('PAIRING_RELOAD_AND_AUTO_RESUME_PASS');
