@@ -1,12 +1,14 @@
 {
   "name": "AI-OS",
   "short_name": "AI-OS",
+  "id": "/q-launcher/app/",
   "start_url": "../app/#world",
   "scope": "../",
   "display": "standalone",
   "background_color": "#050b09",
   "theme_color": "#07100e",
   "icons": [
-    {"src": "../icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+    {"src": "../app/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "../app/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
   ]
 }

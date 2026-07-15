@@ -1,0 +1,17 @@
+{
+  "schema": "aios.owner_app.version.v1",
+  "version": "build-e267e337100873ce",
+  "canonical_path": "/q-launcher/app/",
+  "update_strategy": "foreground-no-store-same-url",
+  "service_worker": false,
+  "bundle_files": [
+    "app/index.html",
+    "app/manifest.webmanifest",
+    "app/icons/icon-180.png",
+    "app/icons/icon-192.png",
+    "app/icons/icon-512.png",
+    "frontier/index.html",
+    "frontier/manifest.webmanifest"
+  ],
+  "bundle_sha256": "e267e337100873ce6b279e900332673e8ef7c79cf55089a076e2108130acff04"
+}
