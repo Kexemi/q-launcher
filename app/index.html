@@ -41,12 +41,18 @@ nav{display:grid;grid-template-columns:repeat(3,1fr);padding:8px 12px calc(8px +
 <div id="fatal"><div><h2>AI-OS is reconnecting</h2><p>The app stayed open. Your work is safe.</p><button id="retry">Try now</button></div></div>
 <script>
 "use strict";
-const APP_BUILD="build-3128798cb99932ac";
+const APP_BUILD="build-7232690c0d09275a";
+const CANONICAL_APP_PATH="/q-launcher/app/";
+const UPDATE_RETRY_MS=60000;
 const TOKEN_KEY="aios_token"; const CAMPAIGN="frontier-lab-acceptance";
 const S={base:"",token:"",app:null,cards:null,view:"world",busy:false};
 const $=s=>document.querySelector(s);
 function connection(mode,text){const e=$("#connection");e.className="status "+mode;e.lastElementChild.textContent=text}
-let updateCheckActive=false;
+let updateCheckActive=false,updateRetryTimer=0;
+function scheduleUpdateRetry(ms){
+  clearTimeout(updateRetryTimer);
+  updateRetryTimer=setTimeout(()=>{updateRetryTimer=0;if(document.visibilityState==="visible")checkForUpdate()},Math.max(250,ms));
+}
 async function checkForUpdate(){
   if(updateCheckActive)return;
   updateCheckActive=true;
@@ -56,10 +62,19 @@ async function checkForUpdate(){
     const d=await r.json();
     const next=String(d.version||"");
     if(next&&next!==APP_BUILD){
-      const u=new URL(location.href);
-      u.pathname=new URL("./",location.href).pathname;
-      if(u.searchParams.get("app-build")===next)return;
+      const u=new URL(location.href),now=Date.now(),retryKey="aios-update-retry:"+next;
+      u.pathname=CANONICAL_APP_PATH;
+      if(u.searchParams.get("app-build")===next){
+        const last=Number(sessionStorage.getItem(retryKey)||0),wait=UPDATE_RETRY_MS-(now-last);
+        if(wait>0){scheduleUpdateRetry(wait);return}
+        sessionStorage.setItem(retryKey,String(now));
+        u.searchParams.set("app-retry",String(now));
+        location.replace(u.href);
+        return
+      }
+      sessionStorage.setItem(retryKey,String(now));
       u.searchParams.set("app-build",next);
+      u.searchParams.delete("app-retry");
       if(!u.hash)u.hash="#world";
       location.replace(u.href);
     }
@@ -79,5 +94,5 @@ function optionAnswer(o){return /^(yes|no)$/i.test(String(o.k))?String(o.k):Stri
 function renderCard(card){const stage=$("#decision-stage");const options=card.answer_type==="yesno"?(card.yes_only?[{k:"yes",label:"Yes — I approve"}]:[{k:"yes",label:"Yes"},{k:"no",label:"No"}]):(card.options||[]);const multi=card.answer_type==="multi";const choices=multi?options.map(o=>`<label class="action" style="display:flex;align-items:center;gap:10px;padding:12px"><input type="checkbox" data-multi="${esc(optionAnswer(o))}"> ${esc(o.label||o.k)}</label>`).join("")+`<button class="action" id="submit-multi">Confirm selection</button>`:options.map(o=>`<button data-value="${esc(optionAnswer(o))}">${esc(o.label||o.k)}${card.rec&&String(card.rec.k)===String(o.k)?`<span class="tap">recommended · ${esc(card.rec.reason||"")}</span>`:""}</button>`).join("");stage.innerHTML=`<div class="hero question"><span class="eyebrow">${esc(card.priority||"decision")}</span><h2>${esc(card.question)}</h2><p>${esc(card.why||"")}</p><div id="choices">${choices}</div>${options.length?"":`<input id="text-answer" type="${card.answer_type==="number"?"number":"text"}" placeholder="${esc(card.format||"Type or dictate")}"><button id="submit-text">Record decision</button>`}<details style="margin-top:12px"><summary>note for the record</summary><input id="decision-note" placeholder="optional context"></details><button id="later">Later</button><div id="decision-error" style="color:var(--red);margin-top:10px"></div></div>`;stage.querySelectorAll("[data-value]").forEach(b=>b.onclick=()=>submit(card,b.dataset.value));const text=$("#submit-text");if(text)text.onclick=()=>{const v=$("#text-answer").value.trim();if(v)submit(card,card.answer_type==="number"?Number(v):v)};const m=$("#submit-multi");if(m)m.onclick=()=>{const picked=[...stage.querySelectorAll("[data-multi]:checked")].map(x=>x.dataset.multi);if(picked.length)submit(card,picked.join(" + "))};$("#later").onclick=async()=>{if(S.busy)return;S.busy=true;try{await api("/api/card-action",{method:"POST",body:JSON.stringify({qid:card.id,action:"later"})});await renderDecisions()}catch(e){$("#decision-error").textContent="Not deferred. This card stayed here."}finally{S.busy=false}}}
 async function submit(card,value){if(S.busy)return;S.busy=true;const stage=$("#decision-stage"),err=$("#decision-error"),note=$("#decision-note")?.value.trim()||"";stage.querySelectorAll("button,input").forEach(x=>x.disabled=true);if(err)err.textContent="Saving safely…";try{const r=await api("/api/answer",{method:"POST",body:JSON.stringify({qid:card.id,answer:value,note})});if(!r.ok)throw Error(r.error||"not accepted");await boot(false);show("decisions",false)}catch(e){stage.querySelectorAll("button,input").forEach(x=>x.disabled=false);if(err)err.textContent="Not recorded. Your card stayed here — tap again when connected."}finally{S.busy=false}}
 async function boot(reveal=true){try{connection("retrying","connecting");const [app,cards]=await Promise.all([api("/api/app-state"),api("/api/cards?campaign="+CAMPAIGN)]);S.app=app;S.cards=cards;renderWorld();renderFocus();$("#fatal").classList.remove("show");const initial=(location.hash||"#world").slice(1);show(initial,false)}catch(e){if(!$("#pair").classList.contains("show"))$("#fatal").classList.add("show")}}
-document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>show(b.dataset.go));$("#primary-region").onclick=()=>show("focus");$("#retry").onclick=()=>boot();addEventListener("popstate",()=>show((location.hash||"#world").slice(1),false));addEventListener("online",()=>boot(false));addEventListener("pageshow",()=>checkForUpdate());document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkForUpdate()});boot();
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>show(b.dataset.go));$("#primary-region").onclick=()=>show("focus");$("#retry").onclick=()=>boot();addEventListener("popstate",()=>show((location.hash||"#world").slice(1),false));addEventListener("online",()=>{checkForUpdate();boot(false)});addEventListener("pageshow",()=>checkForUpdate());document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkForUpdate()});boot();
 </script></body></html>
