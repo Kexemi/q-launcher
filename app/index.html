@@ -41,7 +41,7 @@ nav{display:grid;grid-template-columns:repeat(3,1fr);padding:8px 12px calc(8px +
 <div id="fatal"><div><h2>AI-OS is reconnecting</h2><p>The app stayed open. Your work is safe.</p><button id="retry">Try now</button></div></div>
 <script>
 "use strict";
-const APP_BUILD="build-e267e337100873ce";
+const APP_BUILD="build-3128798cb99932ac";
 const TOKEN_KEY="aios_token"; const CAMPAIGN="frontier-lab-acceptance";
 const S={base:"",token:"",app:null,cards:null,view:"world",busy:false};
 const $=s=>document.querySelector(s);
@@ -58,6 +58,7 @@ async function checkForUpdate(){
     if(next&&next!==APP_BUILD){
       const u=new URL(location.href);
       u.pathname=new URL("./",location.href).pathname;
+      if(u.searchParams.get("app-build")===next)return;
       u.searchParams.set("app-build",next);
       if(!u.hash)u.hash="#world";
       location.replace(u.href);

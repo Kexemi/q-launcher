@@ -10,6 +10,7 @@ const originalBuild = originalHtml.match(/const APP_BUILD="([^"]+)";/)?.[1];
 assert.ok(originalBuild, 'APP_BUILD marker missing');
 let servedBuild = originalBuild;
 let advertisedBuild = servedBuild;
+let htmlRequests = 0;
 const versionRequests = [];
 const mime = { '.html': 'text/html', '.json': 'application/json', '.png': 'image/png', '.webmanifest': 'application/manifest+json' };
 
@@ -25,6 +26,7 @@ const server = createServer(async (req, res) => {
     let rel = rawPath;
     if (rel.endsWith('/')) rel += 'index.html';
     if (rel === '/app/index.html') {
+      htmlRequests += 1;
       const html = originalHtml.replace(/const APP_BUILD="[^"]+";/, `const APP_BUILD="${servedBuild}";`);
       res.writeHead(200, { 'Content-Type': 'text/html', 'Cache-Control': 'no-cache' });
       res.end(html);
@@ -53,11 +55,23 @@ try {
   assert.equal(new URL(page.url()).pathname, '/app/');
   assert.equal(new URL(page.url()).hash, '#world');
 
-  servedBuild = `${originalBuild}-next`;
-  advertisedBuild = servedBuild;
+  const nextBuild = `${originalBuild}-next`;
+  advertisedBuild = nextBuild;
+  const htmlBeforeLag = htmlRequests;
   await page.evaluate(() => window.dispatchEvent(new Event('pageshow')));
-  await page.waitForURL((url) => url.pathname === '/app/' && url.searchParams.get('app-build') === servedBuild && url.hash === '#world');
+  await page.waitForURL((url) => url.pathname === '/app/' && url.searchParams.get('app-build') === nextBuild && url.hash === '#world');
+  await page.waitForFunction((build) => APP_BUILD === build, originalBuild);
+  await page.waitForTimeout(600);
+  const lagReloads = htmlRequests - htmlBeforeLag;
+  assert.equal(lagReloads, 1, 'version-first CDN propagation must cause exactly one cache-busting reload');
+
+  servedBuild = nextBuild;
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.waitForFunction((build) => APP_BUILD === build, nextBuild);
   await page.waitForTimeout(350);
+  const settledHtmlRequests = htmlRequests;
+  await page.waitForTimeout(400);
+  assert.equal(htmlRequests, settledHtmlRequests, 'settled build must not enter a reload loop');
 
   const final = new URL(page.url());
   assert.equal(final.origin, origin, 'update must never rotate app origin');
@@ -68,7 +82,7 @@ try {
   assert.ok(versionRequests.some((headers) => /no-cache|max-age=0/i.test(headers['cache-control'] || '')), 'no-store fetch must bypass stale version cache');
   const registrations = await page.evaluate(async () => navigator.serviceWorker ? (await navigator.serviceWorker.getRegistrations()).length : 0);
   assert.equal(registrations, 0, 'no stale service worker may own the permanent shell');
-  console.log(JSON.stringify({ pass: true, canonical: '/app/', old_build: originalBuild, new_build: servedBuild, same_origin: true, service_workers: registrations }));
+  console.log(JSON.stringify({ pass: true, canonical: '/app/', old_build: originalBuild, new_build: servedBuild, same_origin: true, service_workers: registrations, version_first_lag_reloads: lagReloads }));
 } finally {
   await browser.close();
   await new Promise((resolve) => server.close(resolve));

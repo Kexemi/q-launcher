@@ -1,6 +1,6 @@
 {
   "schema": "aios.owner_app.version.v1",
-  "version": "build-e267e337100873ce",
+  "version": "build-3128798cb99932ac",
   "canonical_path": "/q-launcher/app/",
   "update_strategy": "foreground-no-store-same-url",
   "service_worker": false,
@@ -13,5 +13,5 @@
     "frontier/index.html",
     "frontier/manifest.webmanifest"
   ],
-  "bundle_sha256": "e267e337100873ce6b279e900332673e8ef7c79cf55089a076e2108130acff04"
+  "bundle_sha256": "3128798cb99932acdee87b8385cd6696018ce9a57d60379a27d7af0218e6a962"
 }

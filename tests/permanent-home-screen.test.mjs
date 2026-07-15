@@ -62,6 +62,7 @@ assert.match(appHtml, /cache:\s*"no-store"/);
 assert.match(appHtml, /pageshow/);
 assert.match(appHtml, /visibilitychange/);
 assert.match(appHtml, /app-build/);
+assert.match(appHtml, /searchParams\.get\("app-build"\)===next/);
 assert.match(appHtml, /location\.replace/);
 assert.doesNotMatch(appHtml, /serviceWorker|service-worker/i, 'service workers can pin stale iOS builds');
 
