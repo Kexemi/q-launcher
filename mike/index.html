@@ -1,0 +1,1150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mike">
+<meta name="theme-color" content="#11243A">
+<meta name="description" content="Mike meeting guide with voice coach — tap toggles + speak lines">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<title>Mike · Voice Guide</title>
+<style>
+  :root {
+    --bg: #F3F0E7;
+    --navy: #11243A;
+    --ink: #18222D;
+    --muted: #52606D;
+    --gold: #D79B32;
+    --green: #246B5B;
+    --red: #9C3F3F;
+    --white: #FFFFFF;
+    --pale: #E8EEF2;
+    --line: rgba(17, 36, 58, 0.10);
+    --done: #E7F1EE;
+    --danger-bg: #F5E7E5;
+    --safe: #f7f5ef;
+    --shadow: 0 10px 28px rgba(17, 36, 58, 0.08);
+    --radius: 18px;
+    --tap: 52px;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; min-height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    background:
+      radial-gradient(120% 70% at 50% -10%, rgba(215, 155, 50, 0.16), transparent 55%),
+      linear-gradient(180deg, #ebe6da 0%, var(--bg) 40%, #ebe7dc 100%);
+    color: var(--ink);
+    padding: calc(12px + env(safe-area-inset-top)) 14px calc(96px + env(safe-area-inset-bottom));
+  }
+  .shell { max-width: 430px; margin: 0 auto; }
+  header {
+    background: var(--navy);
+    color: white;
+    border-radius: 22px;
+    padding: 18px 18px 16px;
+    box-shadow: var(--shadow);
+    margin-bottom: 12px;
+  }
+  .kicker {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  h1 {
+    margin: 0 0 6px;
+    font-size: 24px;
+    line-height: 1.15;
+    font-weight: 750;
+  }
+  .sub {
+    margin: 0;
+    color: rgba(255,255,255,0.72);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .progress {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+  }
+  .bar {
+    height: 8px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .bar > i {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--gold), #e8c06a);
+    border-radius: 99px;
+    transition: width 180ms ease;
+  }
+  .count {
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.85);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .voice-bar {
+    margin-top: 12px;
+    display: grid;
+    gap: 8px;
+  }
+  .voice-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .seg {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 4px;
+  }
+  .seg button, .pill {
+    min-height: 40px;
+    border: 0;
+    border-radius: 11px;
+    background: transparent;
+    color: rgba(255,255,255,0.72);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .seg button[aria-pressed="true"], .pill.on {
+    background: rgba(255,255,255,0.14);
+    color: white;
+  }
+  .pill {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .voice-note {
+    font-size: 11px;
+    line-height: 1.35;
+    color: rgba(255,255,255,0.58);
+  }
+  .voice-note strong { color: var(--gold); }
+  .now-card {
+    background: linear-gradient(180deg, #17324d, var(--navy));
+    color: white;
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+    margin-bottom: 12px;
+    border: 1px solid rgba(215,155,50,0.25);
+  }
+  .now-card .label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .now-card .big {
+    font-size: 18px;
+    line-height: 1.35;
+    font-weight: 700;
+    margin: 0 0 8px;
+  }
+  .now-card .cue {
+    margin: 0;
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.4;
+  }
+  .now-actions {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .now-actions button {
+    min-height: 48px;
+    border-radius: 14px;
+    border: 0;
+    font-size: 13px;
+    font-weight: 750;
+    cursor: pointer;
+  }
+  .btn-speak {
+    background: linear-gradient(180deg, #ecd6a4, var(--gold));
+    color: #191509;
+  }
+  .btn-done {
+    background: rgba(76, 196, 146, 0.18);
+    color: #9be7c6;
+    border: 1px solid rgba(76,196,146,0.35) !important;
+  }
+  .btn-skip {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.85);
+    border: 1px solid rgba(255,255,255,0.12) !important;
+  }
+  .tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .tab {
+    min-height: 44px;
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,0.55);
+    border-radius: 14px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0 4px;
+  }
+  .tab[aria-selected="true"] {
+    background: var(--navy);
+    color: white;
+    border-color: var(--navy);
+  }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255,255,255,0.7);
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .card-h {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    padding: 14px 16px 8px;
+  }
+  .card-h h2 {
+    margin: 0;
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+  .card-h span {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .hint {
+    padding: 0 16px 12px;
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .item-row {
+    display: grid;
+    grid-template-columns: 1fr 48px;
+    border-top: 1px solid var(--line);
+    background: var(--white);
+  }
+  .item-row.on { background: var(--done); }
+  .item {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 12px;
+    align-items: start;
+    text-align: left;
+    border: 0;
+    background: transparent;
+    padding: 14px 12px 14px 16px;
+    min-height: var(--tap);
+    cursor: pointer;
+    color: inherit;
+    font: inherit;
+  }
+  .speak-mini {
+    border: 0;
+    border-left: 1px solid var(--line);
+    background: transparent;
+    color: var(--navy);
+    font-size: 18px;
+    cursor: pointer;
+    min-height: var(--tap);
+  }
+  .item-row.on .label {
+    color: var(--green);
+    text-decoration: line-through;
+    text-decoration-thickness: 1.5px;
+    opacity: 0.9;
+  }
+  .box {
+    width: 24px;
+    height: 24px;
+    border-radius: 8px;
+    border: 2px solid rgba(17,36,58,0.28);
+    display: grid;
+    place-items: center;
+    margin-top: 1px;
+    background: white;
+  }
+  .item-row.on .box {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .box svg {
+    width: 14px;
+    height: 14px;
+    opacity: 0;
+    stroke: white;
+    stroke-width: 2.5;
+    fill: none;
+  }
+  .item-row.on .box svg { opacity: 1; }
+  .label {
+    font-size: 15px;
+    line-height: 1.35;
+    font-weight: 600;
+  }
+  .meta {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 1.35;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .quote {
+    margin: 0;
+    padding: 12px 16px 14px;
+    border-top: 1px solid var(--line);
+    background: var(--safe);
+  }
+  .quote .said {
+    font-size: 14px;
+    line-height: 1.45;
+    font-weight: 650;
+    color: var(--ink);
+  }
+  .quote-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .quote-actions button {
+    min-height: 42px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: white;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .quote-actions .speak {
+    background: var(--navy);
+    color: white;
+    border-color: var(--navy);
+  }
+  .avoid .item-row { background: #fffaf9; }
+  .avoid .item-row.on { background: var(--danger-bg); }
+  .avoid .item-row.on .label { color: var(--red); }
+  .banner {
+    background: var(--pale);
+    border-radius: 16px;
+    padding: 12px 14px;
+    color: var(--navy);
+    font-size: 13px;
+    line-height: 1.4;
+    margin-bottom: 12px;
+    border: 1px solid rgba(17,36,58,0.06);
+  }
+  .banner strong { color: var(--green); }
+  .danger-banner {
+    background: var(--danger-bg);
+    color: var(--red);
+  }
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .btn {
+    min-height: 46px;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,0.7);
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .btn.danger { color: var(--red); }
+  .dock {
+    position: fixed;
+    left: 50%;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    width: min(430px, calc(100% - 20px));
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 0.8fr;
+    gap: 8px;
+    z-index: 30;
+  }
+  .dock button {
+    min-height: 54px;
+    border-radius: 16px;
+    border: 0;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 12px 30px rgba(17,36,58,0.22);
+  }
+  .dock .primary {
+    background: linear-gradient(180deg, #ecd6a4, var(--gold));
+    color: #191509;
+  }
+  .dock .secondary {
+    background: var(--navy);
+    color: white;
+  }
+  .dock .ghost {
+    background: white;
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(78px + env(safe-area-inset-bottom));
+    transform: translateX(-50%) translateY(120%);
+    background: var(--navy);
+    color: white;
+    padding: 10px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 650;
+    opacity: 0;
+    transition: 180ms ease;
+    z-index: 40;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  footer {
+    margin-top: 8px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.4;
+  }
+  .settings-grid {
+    display: grid;
+    gap: 10px;
+    padding: 14px 16px 16px;
+  }
+  .settings-grid label {
+    display: grid;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .settings-grid select, .settings-grid input[type="range"] {
+    width: 100%;
+    min-height: 42px;
+  }
+  .settings-grid select {
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    padding: 0 12px;
+    background: white;
+    font-size: 14px;
+  }
+  .status-line {
+    font-size: 12px;
+    color: var(--muted);
+    padding: 0 16px 14px;
+  }
+</style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="kicker">Advantage · voice coach</div>
+      <h1>Mike meeting</h1>
+      <p class="sub">App holds the next line. You listen once, then say it. Or use earpiece cues live.</p>
+      <div class="progress">
+        <div class="bar" aria-hidden="true"><i id="barFill"></i></div>
+        <div class="count" id="progressCount">0 / 0</div>
+      </div>
+      <div class="voice-bar">
+        <div class="seg" role="group" aria-label="Voice mode">
+          <button type="button" id="modeRehearse" aria-pressed="true">Rehearse</button>
+          <button type="button" id="modeLive" aria-pressed="false">Live ear</button>
+          <button type="button" id="modeMute" aria-pressed="false">Silent</button>
+        </div>
+        <div class="voice-row">
+          <button type="button" class="pill on" id="autoSpeakNext" aria-pressed="true">Auto-speak next</button>
+          <button type="button" class="pill" id="stopVoice" aria-pressed="false">Stop voice</button>
+        </div>
+        <div class="voice-note" id="voiceNote">
+          <strong>Rehearse:</strong> full lines out loud before the room. First tap unlocks iPhone audio.
+        </div>
+      </div>
+    </header>
+
+    <section class="now-card" aria-live="polite">
+      <div class="label" id="nowKind">Next line</div>
+      <p class="big" id="nowBig">Loading…</p>
+      <p class="cue" id="nowCue"></p>
+      <div class="now-actions">
+        <button type="button" class="btn-speak" id="btnSpeakNow">Speak</button>
+        <button type="button" class="btn-done" id="btnMarkNow">Hit · next</button>
+        <button type="button" class="btn-skip" id="btnSkipNow">Skip</button>
+      </div>
+    </section>
+
+    <div class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab" role="tab" data-panel="hit" aria-selected="true">Hit list</button>
+      <button class="tab" role="tab" data-panel="say" aria-selected="false">Say this</button>
+      <button class="tab" role="tab" data-panel="voice" aria-selected="false">Voice</button>
+      <button class="tab" role="tab" data-panel="after" aria-selected="false">After</button>
+    </div>
+
+    <section class="panel active" id="panel-hit" role="tabpanel">
+      <div class="banner">
+        Success = respect + real story + one load he names + door open.
+        <strong>2–3 questions max.</strong> Voice coach is a crutch, not a script dump.
+      </div>
+
+      <div class="card" data-group="topics">
+        <div class="card-h">
+          <h2>Topics to hit</h2>
+          <span id="topicsCount">0/0</span>
+        </div>
+        <p class="hint">Order matters. Speaker icon = hear this now.</p>
+        <div id="topics"></div>
+      </div>
+
+      <div class="card" data-group="questions">
+        <div class="card-h">
+          <h2>Questions line</h2>
+          <span id="questionsCount">0/0</span>
+        </div>
+        <p class="hint">Use only what the conversation earns.</p>
+        <div id="questions"></div>
+      </div>
+
+      <div class="card avoid" data-group="avoid">
+        <div class="card-h">
+          <h2>Do not ask</h2>
+          <span id="avoidCount">0/0</span>
+        </div>
+        <p class="hint">If you slip, mark it. These sound like an audit.</p>
+        <div id="avoid"></div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-say" role="tabpanel">
+      <div class="banner">Copy or speak any line. In the room, prefer the big “Next line” card.</div>
+      <div class="card" id="phrases"></div>
+    </section>
+
+    <section class="panel" id="panel-voice" role="tabpanel">
+      <div class="banner">
+        Uses your phone’s built-in speech engine (no cloud, no client data).
+        Best with one earbud. <strong>Live ear</strong> speaks short private cues, not full paragraphs.
+      </div>
+      <div class="card">
+        <div class="card-h"><h2>Voice settings</h2><span id="voiceSupport">…</span></div>
+        <div class="settings-grid">
+          <label>Voice
+            <select id="voiceSelect"></select>
+          </label>
+          <label>Speed <span id="rateVal">0.95</span>
+            <input id="rate" type="range" min="0.7" max="1.15" step="0.05" value="0.95">
+          </label>
+          <label>Live cue volume style
+            <select id="liveStyle">
+              <option value="soft">Soft short cue</option>
+              <option value="full">Full line even live</option>
+            </select>
+          </label>
+        </div>
+        <p class="status-line" id="voiceStatus">Unlock audio with any Speak tap on iPhone.</p>
+      </div>
+      <div class="card">
+        <div class="card-h"><h2>How to use</h2><span>simple</span></div>
+        <div class="hint" style="padding-bottom:16px">
+          <strong>Before Mike:</strong> Rehearse → Speak → Hit · next through openers.<br><br>
+          <strong>In the room:</strong> Live ear + one bud → Speak gives a short private cue → you say it in your own words → Hit · next.<br><br>
+          <strong>If you freeze:</strong> look at the big card. Don’t read a paragraph at him. One sentence, then silence.
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-after" role="tabpanel">
+      <div class="banner">After the room: capture only what he volunteered.</div>
+      <div class="card" data-group="capture">
+        <div class="card-h">
+          <h2>Private capture</h2>
+          <span id="captureCount">0/0</span>
+        </div>
+        <div id="capture"></div>
+      </div>
+      <div class="banner danger-banner">
+        Proceed only if he named a real non-client load, wanted help that keeps his sign-off, and client files / return judgment stay out.
+      </div>
+    </section>
+
+    <div class="actions">
+      <button class="btn" id="btnExport" type="button">Copy status</button>
+      <button class="btn danger" id="btnReset" type="button">Reset all</button>
+    </div>
+    <footer>
+      On-device voice · toggles stay on this phone · no client data
+    </footer>
+  </div>
+
+  <div class="dock" aria-label="Voice coach controls">
+    <button type="button" class="primary" id="dockSpeak">Speak next</button>
+    <button type="button" class="secondary" id="dockDone">Hit · next</button>
+    <button type="button" class="ghost" id="dockStop">Stop</button>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const STORAGE_KEY = 'mike-meeting-voice-checklist-v2';
+const CHECK = `<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+
+/** Spine order for the coach: topics + natural speech lines */
+const SPINE = [
+  {
+    id: 't1', group: 'topics', kind: 'Topic',
+    label: 'Catch up like people first',
+    meta: 'No product open',
+    full: "Hey Mike — good to see you. How’s everything been?",
+    cue: "Open warm. Just catch up."
+  },
+  {
+    id: 't2', group: 'topics', kind: 'Topic',
+    label: 'Prove homework',
+    meta: 'AI letter + both videos',
+    full: "I’ve been meaning to say — I actually read your AI letter and watched both Advantage videos.",
+    cue: "Say you read the letter and watched both videos."
+  },
+  {
+    id: 'q1', group: 'questions', kind: 'Question',
+    label: 'Late June: why public AI stance + education series together?',
+    meta: 'Primary opener after homework',
+    full: "What happened in late June that made you decide the firm needed a public AI position and a tax-education series at the same time?",
+    cue: "Ask what happened in late June — why both at once."
+  },
+  {
+    id: 't3', group: 'topics', kind: 'Topic',
+    label: 'Late-June origin / trigger',
+    meta: 'Let him tell the story',
+    full: "That’s really interesting. Tell me more about what pushed it.",
+    cue: "Shut up. Let him talk."
+  },
+  {
+    id: 't4', group: 'topics', kind: 'Topic',
+    label: 'Affirm human-judgment boundary',
+    meta: 'Research/comms help, he owns call',
+    full: "The part that landed for me was: AI can help with research and communication, but the human still owns the judgment and the client. That feels like the right line for a tax firm.",
+    cue: "Affirm his line: AI helps, human owns judgment."
+  },
+  {
+    id: 'q2', group: 'questions', kind: 'Question',
+    label: 'What crossed the line in the demos?',
+    meta: 'Only if he opens the door',
+    full: "What was the moment in those demos that felt like, no, we’re not doing that?",
+    cue: "Only if open: what crossed the line in the demos?"
+  },
+  {
+    id: 't5', group: 'topics', kind: 'Topic',
+    label: 'His real time load',
+    meta: 'What still eats the most time',
+    full: "On the things you are using AI for — posts, graphics, research for the videos — what part still eats the most of your time?",
+    cue: "Ask what still eats the most time."
+  },
+  {
+    id: 'q3', group: 'questions', kind: 'Question',
+    label: 'Posts / graphics / research: what still eats the most time?',
+    meta: 'Load, not dependency trap',
+    full: "On the things you are using AI for — posts, graphics, research for the videos — what part still eats the most of your time?",
+    cue: "Same load question if not asked yet."
+  },
+  {
+    id: 'q4', group: 'questions', kind: 'Question',
+    label: 'How do you go from “IRS says X” to firm-safe language?',
+    meta: 'Only if he expands the process',
+    full: "How do you usually go from the IRS says X to something you’re comfortable putting under the firm’s name?",
+    cue: "Only if he expands: source to firm-safe language."
+  },
+  {
+    id: 't6', group: 'topics', kind: 'Topic',
+    label: 'What he wants easier next season',
+    meta: 'No client files · no skipped check',
+    full: "If one piece of that could get easier by next season — without putting client files into a tool or skipping a human check — what would you want taken off your plate first?",
+    cue: "What should get easier next season — no client files."
+  },
+  {
+    id: 'q5', group: 'questions', kind: 'Question',
+    label: 'If one piece got easier by next season—no client files, human check stays—what comes off first?',
+    meta: 'Let him name the need',
+    full: "If one piece of that could get easier by next season — without putting client files into a tool or skipping a human check — what would you want taken off your plate first?",
+    cue: "Let him name what comes off his plate."
+  },
+  {
+    id: 't7', group: 'topics', kind: 'Topic',
+    label: 'Mirror once: fair?',
+    meta: 'Trigger + boundary + load',
+    full: "So it sounds like that trigger, your boundary on human judgment, and that load on you. Is that fair?",
+    cue: "Mirror once: trigger, boundary, load. Fair?"
+  },
+  {
+    id: 'q6', group: 'questions', kind: 'Question',
+    label: 'So it sounds like [trigger], [boundary], [load]. Fair?',
+    meta: 'One reflection max',
+    full: "So it sounds like [his trigger], [his boundary], and [his load]. Is that fair?",
+    cue: "One reflection. Then stop."
+  },
+  {
+    id: 't8', group: 'topics', kind: 'Topic',
+    label: 'Clean close',
+    meta: 'Optional small next step only if earned',
+    full: "I really respect that you’re drawing the line publicly instead of pretending AI isn’t there. Thanks for walking me through it.",
+    cue: "Clean close. Respect the public line. Stop unless he invites more."
+  },
+];
+
+const TOPICS = SPINE.filter(x => x.group === 'topics');
+const QUESTIONS = SPINE.filter(x => x.group === 'questions');
+
+const AVOID = [
+  { id: 'a1', label: '“When you say we, who else uses AI?”', full: 'Do not ask who else uses AI.', cue: 'Skip dependency trap.' },
+  { id: 'a2', label: '“If you left two weeks, what keeps running?”', full: 'Do not ask the two-week absence trap.', cue: 'Skip absence trap.' },
+  { id: 'a3', label: '“What should the team own by tax season?”', full: 'Do not force team ownership language.', cue: 'Skip team audit.' },
+  { id: 'a4', label: 'Stacked tools / sources / policy audit list', full: 'Do not run a capability audit.', cue: 'No audit stack.' },
+  { id: 'a5', label: 'Document or video error gotchas', full: 'Do not ambush with document errors.', cue: 'No gotchas.' },
+  { id: 'a6', label: 'Maturity ladder / “you’re behind” / buyout talk', full: 'Do not grade him or discuss buyout.', cue: 'No ladder. No buyout.' },
+  { id: 'a7', label: 'Return automation / black-box prep pitch', full: 'Do not pitch return automation.', cue: 'No return automation.' },
+];
+
+const PHRASES = [
+  { id: 'p1', use: 'Bridge', text: "I’ve been meaning to say—I actually read your AI letter and watched both Advantage videos." },
+  { id: 'p2', use: 'Origin', text: "What happened in late June that made you decide the firm needed a public AI position and a tax-education series at the same time?" },
+  { id: 'p3', use: 'Boundary', text: "The part that landed for me was: AI can help with research and communication, but the human still owns the judgment and the client. That feels like the right line for a tax firm." },
+  { id: 'p4', use: 'Demo (if open)', text: "What was the moment in those demos that felt like, “No, we’re not doing that”?" },
+  { id: 'p5', use: 'Load', text: "On the things you are using AI for—posts, graphics, research for the videos—what part still eats the most of your time?" },
+  { id: 'p6', use: 'Wish', text: "If one piece of that could get easier by next season—without putting client files into a tool or skipping a human check—what would you want taken off your plate first?" },
+  { id: 'p7', use: 'Reflect', text: "So it sounds like [his trigger], [his boundary], and [his load]. Is that fair?" },
+  { id: 'p8', use: 'Close', text: "I really respect that you’re drawing the line publicly instead of pretending AI isn’t there. Thanks for walking me through it." },
+  { id: 'p9', use: 'Optional offer', text: "If it is ever useful, I’d be glad to help think through just that one non-client workflow—sources, draft, second set of eyes, and you still own the final check. No return automation and no black box. Totally optional." },
+];
+
+const CAPTURE = [
+  { id: 'c1', label: 'Late-June trigger, in his words' },
+  { id: 'c2', label: 'Boundary, in his words' },
+  { id: 'c3', label: 'What consumes his time' },
+  { id: 'c4', label: 'Public/research/comms lane he wants easier (if any)' },
+  { id: 'c5', label: 'Whether another person already helps' },
+  { id: 'c6', label: 'Sources / review habits he volunteered' },
+  { id: 'c7', label: 'What he does not want' },
+  { id: 'c8', label: 'Whether he invited a next conversation' },
+];
+
+const GROUPS = { topics: TOPICS, questions: QUESTIONS, avoid: AVOID, capture: CAPTURE };
+const BY_ID = Object.fromEntries([...SPINE, ...AVOID].map(x => [x.id, x]));
+
+const state = loadState();
+let voices = [];
+let currentId = state.currentId || firstOpenId();
+let audioUnlocked = false;
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaultState();
+    return { ...defaultState(), ...JSON.parse(raw) };
+  } catch {
+    return defaultState();
+  }
+}
+function defaultState() {
+  return {
+    on: {},
+    mode: 'rehearse', // rehearse | live | mute
+    autoSpeak: true,
+    rate: 0.95,
+    voiceURI: '',
+    liveStyle: 'soft',
+    currentId: null,
+  };
+}
+function saveState() {
+  state.currentId = currentId;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => el.classList.remove('show'), 1400);
+}
+
+function isOn(id) { return !!state.on[id]; }
+
+function firstOpenId() {
+  const hit = SPINE.find(x => !isOn(x.id));
+  return hit ? hit.id : SPINE[SPINE.length - 1].id;
+}
+
+function scoredIds() {
+  return SPINE.map(x => x.id);
+}
+
+function speechSupported() {
+  return typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
+}
+
+function pickVoice() {
+  if (!speechSupported()) return null;
+  voices = window.speechSynthesis.getVoices() || [];
+  if (state.voiceURI) {
+    const exact = voices.find(v => v.voiceURI === state.voiceURI);
+    if (exact) return exact;
+  }
+  const en = voices.filter(v => /en(-|_|$)/i.test(v.lang));
+  const prefer = en.find(v => /samantha|karen|moira|daniel|alex|google us|microsoft (aria|guy|jenny)/i.test(v.name))
+    || en.find(v => /en-US/i.test(v.lang))
+    || en[0]
+    || voices[0]
+    || null;
+  return prefer;
+}
+
+function populateVoices() {
+  const sel = document.getElementById('voiceSelect');
+  voices = speechSupported() ? (window.speechSynthesis.getVoices() || []) : [];
+  const en = voices.filter(v => /en(-|_|$)/i.test(v.lang));
+  const list = en.length ? en : voices;
+  sel.innerHTML = list.map(v => `<option value="${escapeAttr(v.voiceURI)}">${escapeHtml(v.name)} (${escapeHtml(v.lang)})</option>`).join('')
+    || '<option value="">System default</option>';
+  if (state.voiceURI) sel.value = state.voiceURI;
+  else if (list[0]) {
+    state.voiceURI = list[0].voiceURI;
+    sel.value = state.voiceURI;
+  }
+  document.getElementById('voiceSupport').textContent = speechSupported()
+    ? (list.length ? `${list.length} voices` : 'ready')
+    : 'unsupported';
+}
+
+function stopVoice() {
+  if (speechSupported()) window.speechSynthesis.cancel();
+}
+
+function speakText(text, { forceFull = false } = {}) {
+  if (state.mode === 'mute' && !forceFull) {
+    toast('Silent mode');
+    return false;
+  }
+  if (!speechSupported()) {
+    toast('Voice not supported on this browser');
+    return false;
+  }
+  stopVoice();
+  const u = new SpeechSynthesisUtterance(text);
+  const voice = pickVoice();
+  if (voice) u.voice = voice;
+  u.rate = Number(state.rate) || 0.95;
+  u.pitch = state.mode === 'live' ? 0.95 : 1;
+  u.volume = state.mode === 'live' && state.liveStyle === 'soft' ? 0.75 : 1;
+  u.onstart = () => { audioUnlocked = true; document.getElementById('voiceStatus').textContent = 'Speaking…'; };
+  u.onend = () => { document.getElementById('voiceStatus').textContent = 'Ready'; };
+  u.onerror = () => { document.getElementById('voiceStatus').textContent = 'Voice error — tap Speak again'; };
+  window.speechSynthesis.speak(u);
+  return true;
+}
+
+function textForItem(item, { forceFull = false } = {}) {
+  if (!item) return '';
+  if (forceFull || state.mode === 'rehearse' || state.liveStyle === 'full') return item.full || item.label;
+  if (state.mode === 'live') return item.cue || item.full || item.label;
+  return item.full || item.label;
+}
+
+function speakItem(id, opts = {}) {
+  const item = BY_ID[id] || SPINE.find(x => x.id === id);
+  if (!item) return;
+  currentId = id;
+  saveState();
+  renderNow();
+  const text = textForItem(item, opts);
+  speakText(text, opts);
+}
+
+function toggle(id) {
+  state.on[id] = !state.on[id];
+  if (state.on[id] && currentId === id) currentId = firstOpenId();
+  saveState();
+  renderAll();
+}
+
+function markCurrentDone() {
+  if (!currentId) currentId = firstOpenId();
+  state.on[currentId] = true;
+  currentId = firstOpenId();
+  saveState();
+  renderAll();
+  if (state.autoSpeak && state.mode !== 'mute' && !allDone()) {
+    // slight delay so iOS stacks after gesture
+    setTimeout(() => speakItem(currentId), 180);
+  } else {
+    toast(allDone() ? 'Spine complete' : 'Next ready');
+  }
+}
+
+function skipCurrent() {
+  const idx = SPINE.findIndex(x => x.id === currentId);
+  const next = SPINE.slice(idx + 1).find(x => !isOn(x.id)) || SPINE.find(x => !isOn(x.id));
+  currentId = next ? next.id : currentId;
+  saveState();
+  renderAll();
+  if (state.autoSpeak && state.mode !== 'mute') setTimeout(() => speakItem(currentId), 120);
+}
+
+function allDone() {
+  return SPINE.every(x => isOn(x.id));
+}
+
+function renderGroup(groupKey, mountId, countId) {
+  const items = GROUPS[groupKey];
+  const mount = document.getElementById(mountId);
+  const done = items.filter(x => isOn(x.id)).length;
+  document.getElementById(countId).textContent = `${done}/${items.length}`;
+  mount.innerHTML = items.map(item => {
+    const on = isOn(item.id);
+    const active = currentId === item.id;
+    return `
+      <div class="item-row ${on ? 'on' : ''}" data-id="${item.id}" style="${active ? 'outline:2px solid rgba(215,155,50,.45); outline-offset:-2px;' : ''}">
+        <button class="item" type="button" data-toggle="${item.id}" aria-pressed="${on}">
+          <span class="box">${CHECK}</span>
+          <span>
+            <span class="label">${escapeHtml(item.label)}</span>
+            ${item.meta ? `<span class="meta">${escapeHtml(item.meta)}</span>` : ''}
+          </span>
+        </button>
+        <button class="speak-mini" type="button" data-speak="${item.id}" aria-label="Speak">🔊</button>
+      </div>
+    `;
+  }).join('');
+  mount.querySelectorAll('[data-toggle]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-toggle');
+      currentId = id;
+      toggle(id);
+    });
+  });
+  mount.querySelectorAll('[data-speak]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      speakItem(btn.getAttribute('data-speak'), { forceFull: state.mode === 'mute' });
+    });
+  });
+}
+
+function renderPhrases() {
+  const mount = document.getElementById('phrases');
+  mount.innerHTML = `
+    <div class="card-h"><h2>Key lines</h2><span>copy or speak</span></div>
+    ${PHRASES.map(p => `
+      <div class="quote">
+        <div class="said">“${escapeHtml(p.text)}”</div>
+        <div class="meta" style="margin-top:6px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:12px">${escapeHtml(p.use)}</div>
+        <div class="quote-actions">
+          <button type="button" data-copy="${escapeAttr(p.text)}">Copy</button>
+          <button type="button" class="speak" data-speak-text="${escapeAttr(p.text)}">Speak</button>
+        </div>
+      </div>
+    `).join('')}
+  `;
+  mount.querySelectorAll('[data-copy]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(btn.getAttribute('data-copy'));
+        toast('Copied');
+      } catch { toast('Copy failed'); }
+    });
+  });
+  mount.querySelectorAll('[data-speak-text]').forEach(btn => {
+    btn.addEventListener('click', () => speakText(btn.getAttribute('data-speak-text'), { forceFull: true }));
+  });
+}
+
+function renderNow() {
+  if (!currentId || !BY_ID[currentId] && !SPINE.find(x => x.id === currentId)) currentId = firstOpenId();
+  const item = SPINE.find(x => x.id === currentId) || BY_ID[currentId];
+  const full = item.full || item.label;
+  const cue = item.cue || '';
+  document.getElementById('nowKind').textContent = allDone()
+    ? 'Done'
+    : `${item.kind || 'Line'} · ${state.mode === 'live' ? 'live cue' : state.mode === 'mute' ? 'silent' : 'rehearse'}`;
+  document.getElementById('nowBig').textContent = allDone()
+    ? 'Spine complete. Listen more than you talk.'
+    : (state.mode === 'live' ? cue : full);
+  document.getElementById('nowCue').textContent = allDone()
+    ? ''
+    : (state.mode === 'live' ? full : (cue ? `Ear cue: ${cue}` : ''));
+}
+
+function updateProgress() {
+  const ids = scoredIds();
+  const done = ids.filter(isOn).length;
+  document.getElementById('progressCount').textContent = `${done} / ${ids.length}`;
+  document.getElementById('barFill').style.width = ids.length ? `${(done / ids.length) * 100}%` : '0%';
+}
+
+function updateModeUI() {
+  document.getElementById('modeRehearse').setAttribute('aria-pressed', state.mode === 'rehearse');
+  document.getElementById('modeLive').setAttribute('aria-pressed', state.mode === 'live');
+  document.getElementById('modeMute').setAttribute('aria-pressed', state.mode === 'mute');
+  document.getElementById('autoSpeakNext').classList.toggle('on', !!state.autoSpeak);
+  document.getElementById('autoSpeakNext').setAttribute('aria-pressed', !!state.autoSpeak);
+  const note = document.getElementById('voiceNote');
+  if (state.mode === 'rehearse') {
+    note.innerHTML = '<strong>Rehearse:</strong> full lines out loud before the room. First tap unlocks iPhone audio.';
+  } else if (state.mode === 'live') {
+    note.innerHTML = '<strong>Live ear:</strong> short private cues for one earbud. You still speak to Mike in your words.';
+  } else {
+    note.innerHTML = '<strong>Silent:</strong> big text only. Speak button still works if you want a one-off line.';
+  }
+  document.getElementById('rate').value = state.rate;
+  document.getElementById('rateVal').textContent = Number(state.rate).toFixed(2);
+  document.getElementById('liveStyle').value = state.liveStyle || 'soft';
+}
+
+function renderAll() {
+  renderGroup('topics', 'topics', 'topicsCount');
+  renderGroup('questions', 'questions', 'questionsCount');
+  renderGroup('avoid', 'avoid', 'avoidCount');
+  renderGroup('capture', 'capture', 'captureCount');
+  renderPhrases();
+  updateProgress();
+  updateModeUI();
+  renderNow();
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;');
+}
+function escapeAttr(s) {
+  return escapeHtml(s).replaceAll("'", '&#39;');
+}
+
+function exportStatus() {
+  const lines = ['Mike meeting status', `Hit: ${scoredIds().filter(isOn).length}/${scoredIds().length}`, '', 'SPINE'];
+  SPINE.forEach(t => lines.push(`${isOn(t.id) ? '[x]' : '[ ]'} ${t.label}`));
+  lines.push('', 'CAPTURE');
+  CAPTURE.forEach(c => lines.push(`${isOn(c.id) ? '[x]' : '[ ]'} ${c.label}`));
+  navigator.clipboard.writeText(lines.join('\n')).then(() => toast('Status copied')).catch(() => toast('Copy failed'));
+}
+
+// Tabs
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.setAttribute('aria-selected', 'false'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.setAttribute('aria-selected', 'true');
+    document.getElementById(`panel-${tab.dataset.panel}`).classList.add('active');
+  });
+});
+
+// Mode controls
+document.getElementById('modeRehearse').onclick = () => { state.mode = 'rehearse'; saveState(); renderAll(); };
+document.getElementById('modeLive').onclick = () => { state.mode = 'live'; saveState(); renderAll(); toast('Live ear'); };
+document.getElementById('modeMute').onclick = () => { state.mode = 'mute'; stopVoice(); saveState(); renderAll(); };
+document.getElementById('autoSpeakNext').onclick = () => {
+  state.autoSpeak = !state.autoSpeak;
+  saveState();
+  updateModeUI();
+};
+document.getElementById('stopVoice').onclick = () => { stopVoice(); toast('Stopped'); };
+document.getElementById('dockStop').onclick = () => { stopVoice(); toast('Stopped'); };
+
+document.getElementById('btnSpeakNow').onclick = () => speakItem(currentId, { forceFull: state.mode === 'mute' });
+document.getElementById('dockSpeak').onclick = () => speakItem(currentId, { forceFull: state.mode === 'mute' });
+document.getElementById('btnMarkNow').onclick = markCurrentDone;
+document.getElementById('dockDone').onclick = markCurrentDone;
+document.getElementById('btnSkipNow').onclick = skipCurrent;
+
+document.getElementById('btnReset').onclick = () => {
+  if (!confirm('Reset all toggles and restart coach?')) return;
+  state.on = {};
+  currentId = SPINE[0].id;
+  saveState();
+  stopVoice();
+  renderAll();
+  toast('Reset');
+};
+document.getElementById('btnExport').onclick = exportStatus;
+
+document.getElementById('rate').oninput = (e) => {
+  state.rate = e.target.value;
+  document.getElementById('rateVal').textContent = Number(state.rate).toFixed(2);
+  saveState();
+};
+document.getElementById('voiceSelect').onchange = (e) => {
+  state.voiceURI = e.target.value;
+  saveState();
+};
+document.getElementById('liveStyle').onchange = (e) => {
+  state.liveStyle = e.target.value;
+  saveState();
+  renderNow();
+};
+
+if (speechSupported()) {
+  populateVoices();
+  window.speechSynthesis.onvoiceschanged = populateVoices;
+} else {
+  document.getElementById('voiceSupport').textContent = 'no TTS';
+  document.getElementById('voiceStatus').textContent = 'This browser has no speech engine. Use big text + Silent mode.';
+}
+
+if (!currentId) currentId = firstOpenId();
+renderAll();
+</script>
+</body>
+</html>
