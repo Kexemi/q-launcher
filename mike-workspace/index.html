@@ -1,0 +1,971 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Priorities">
+<meta name="theme-color" content="#11243A">
+<meta name="description" content="Answer a few quick questions and keep the next steps moving.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<title>Priorities · Workspace</title>
+<style>
+  :root {
+    --bg: #F3F0E7;
+    --navy: #11243A;
+    --ink: #18222D;
+    --muted: #52606D;
+    --gold: #D79B32;
+    --green: #246B5B;
+    --white: #FFFFFF;
+    --line: rgba(17, 36, 58, 0.10);
+    --done: #E7F1EE;
+    --safe: #f7f5ef;
+    --shadow: 0 10px 28px rgba(17, 36, 58, 0.08);
+    --radius: 18px;
+    --tap: 52px;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; min-height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    background:
+      radial-gradient(120% 70% at 50% -10%, rgba(215, 155, 50, 0.16), transparent 55%),
+      linear-gradient(180deg, #ebe6da 0%, var(--bg) 40%, #ebe7dc 100%);
+    color: var(--ink);
+    padding: calc(12px + env(safe-area-inset-top)) 14px calc(92px + env(safe-area-inset-bottom));
+  }
+  .shell { max-width: 430px; margin: 0 auto; }
+  header {
+    background: var(--navy);
+    color: white;
+    border-radius: 22px;
+    padding: 18px 18px 16px;
+    box-shadow: var(--shadow);
+    margin-bottom: 12px;
+  }
+  .kicker {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  h1 {
+    margin: 0 0 6px;
+    font-size: 24px;
+    line-height: 1.15;
+    font-weight: 750;
+  }
+  .sub {
+    margin: 0;
+    color: rgba(255,255,255,0.72);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .progress {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+  }
+  .bar {
+    height: 8px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .bar > i {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--gold), #e8c06a);
+    border-radius: 99px;
+    transition: width 180ms ease;
+  }
+  .count {
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.85);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .tab {
+    min-height: 44px;
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,0.55);
+    border-radius: 14px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0 4px;
+  }
+  .tab[aria-selected="true"] {
+    background: var(--navy);
+    color: white;
+    border-color: var(--navy);
+  }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255,255,255,0.7);
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .card-pad { padding: 16px; }
+  .hero-line {
+    margin: 0 0 10px;
+    font-size: 18px;
+    font-weight: 750;
+    line-height: 1.3;
+    color: var(--navy);
+  }
+  .muted {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .stack { display: grid; gap: 10px; }
+  .pill-list { display: grid; gap: 8px; margin: 14px 0 0; }
+  .status-pill {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    align-items: start;
+    padding: 12px 12px;
+    border-radius: 14px;
+    background: var(--safe);
+    border: 1px solid var(--line);
+  }
+  .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    margin-top: 5px;
+    background: var(--gold);
+  }
+  .dot.green { background: var(--green); }
+  .status-pill strong {
+    display: block;
+    font-size: 13px;
+    color: var(--navy);
+    margin-bottom: 2px;
+  }
+  .status-pill span {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.35;
+  }
+  .btn, .choice {
+    min-height: var(--tap);
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: var(--white);
+    color: var(--ink);
+    font-size: 15px;
+    font-weight: 650;
+    cursor: pointer;
+    padding: 12px 14px;
+    text-align: left;
+    width: 100%;
+    line-height: 1.3;
+  }
+  .btn.primary {
+    background: linear-gradient(180deg, #17324d, var(--navy));
+    color: white;
+    border-color: transparent;
+    text-align: center;
+    font-weight: 750;
+  }
+  .btn.gold {
+    background: linear-gradient(180deg, #ecd6a4, var(--gold));
+    color: #191509;
+    border-color: transparent;
+    text-align: center;
+    font-weight: 750;
+  }
+  .btn.ghost {
+    background: rgba(255,255,255,0.55);
+    text-align: center;
+  }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .choice {
+    background: rgba(255,255,255,0.95);
+    transition: border-color 120ms ease, background 120ms ease;
+  }
+  .choice[aria-pressed="true"] {
+    border-color: var(--navy);
+    background: #EAF0F5;
+    box-shadow: inset 0 0 0 1px var(--navy);
+  }
+  .choice small {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .q-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .q-meta .step {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 800;
+  }
+  .q-meta .skip {
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 650;
+    cursor: pointer;
+    min-height: 36px;
+    padding: 0 4px;
+  }
+  .question {
+    margin: 0 0 14px;
+    font-size: 20px;
+    line-height: 1.28;
+    font-weight: 750;
+    color: var(--navy);
+  }
+  .help {
+    margin: -6px 0 14px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  .nav-row {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  label.field {
+    display: grid;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  input[type="text"], textarea {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    background: #fff;
+    min-height: 52px;
+    resize: vertical;
+  }
+  textarea { min-height: 120px; line-height: 1.4; }
+  input:focus, textarea:focus, .choice:focus-visible, .btn:focus-visible, .tab:focus-visible {
+    outline: 2px solid rgba(215,155,50,0.65);
+    outline-offset: 2px;
+  }
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(18px + env(safe-area-inset-bottom));
+    transform: translateX(-50%) translateY(20px);
+    background: var(--navy);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 160ms ease, transform 160ms ease;
+    z-index: 50;
+    max-width: min(90vw, 360px);
+    text-align: center;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .review-item {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .review-item:last-child { border-bottom: 0; }
+  .review-item .k {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .review-item .v {
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .review-item button {
+    margin-top: 6px;
+    border: 0;
+    background: transparent;
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 750;
+    padding: 0;
+    cursor: pointer;
+  }
+  .banner-done {
+    background: var(--done);
+    border: 1px solid rgba(36,107,91,0.18);
+    color: var(--green);
+    border-radius: 14px;
+    padding: 12px 14px;
+    font-size: 13px;
+    font-weight: 650;
+    line-height: 1.4;
+    margin-bottom: 12px;
+  }
+  .footer-note {
+    text-align: center;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.4;
+    margin-top: 8px;
+    padding: 0 8px;
+  }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <div class="kicker">Quiet progress</div>
+    <h1 id="headerTitle">Your priorities</h1>
+    <p class="sub" id="headerSub">We’re on it. A few short answers keep us moving without long texts.</p>
+    <div class="progress" aria-label="Progress">
+      <div class="bar" aria-hidden="true"><i id="progressBar"></i></div>
+      <div class="count" id="progressCount">0 / 7</div>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Workspace">
+    <button class="tab" role="tab" id="tab-home" aria-selected="true" data-tab="home">Home</button>
+    <button class="tab" role="tab" id="tab-questions" aria-selected="false" data-tab="questions">Questions</button>
+    <button class="tab" role="tab" id="tab-more" aria-selected="false" data-tab="more">Notes</button>
+    <button class="tab" role="tab" id="tab-status" aria-selected="false" data-tab="status">Status</button>
+  </nav>
+
+  <section class="panel active" id="panel-home" role="tabpanel">
+    <div class="card">
+      <div class="card-pad">
+        <p class="hero-line">Three things. No long email thread.</p>
+        <p class="muted">1) Get paper docs into the software faster<br>
+        2) Missing-documents list from a return<br>
+        3) Next-year projection & planning ideas</p>
+        <div class="pill-list">
+          <div class="status-pill">
+            <div class="dot green"></div>
+            <div>
+              <strong>We’re already working the path</strong>
+              <span>You only need the short answers when you have a few minutes.</span>
+            </div>
+          </div>
+          <div class="status-pill">
+            <div class="dot"></div>
+            <div>
+              <strong>No client secrets needed here</strong>
+              <span>Redact names, SSNs, and account numbers before sharing samples.</span>
+            </div>
+          </div>
+        </div>
+        <div class="stack" style="margin-top:16px">
+          <button class="btn primary" id="homeStart">Continue questions</button>
+          <button class="btn ghost" id="homeNotes">Add a note or sample plan</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-questions" role="tabpanel">
+    <div class="card">
+      <div class="card-pad" id="questionCard">
+        <!-- filled by JS -->
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-more" role="tabpanel">
+    <div class="card">
+      <div class="card-pad stack">
+        <p class="hero-line">Anything else you want us to know</p>
+        <p class="muted">Optional. Drop context, constraints, or how you want samples shared.</p>
+        <label class="field">Note
+          <textarea id="extraNote" placeholder="Example: We use Drake. Samples will come by email after I redact them."></textarea>
+        </label>
+        <label class="field">Best way to send redacted samples
+          <div class="stack" id="samplePathChoices"></div>
+        </label>
+        <button class="btn primary" id="saveMore">Save notes</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-pad stack">
+        <p class="hero-line" style="font-size:16px">Sample checklist (redacted)</p>
+        <p class="muted">When ready, send 1–2 fully redacted returns and one planning note you already like. Black out names, SSNs, EINs, account numbers, and addresses.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-status" role="tabpanel">
+    <div class="card">
+      <div class="card-pad">
+        <div id="doneBanner" class="banner-done hidden">Answers saved on this phone. Copy the summary and send it back when ready.</div>
+        <p class="hero-line">Where things stand</p>
+        <div class="pill-list">
+          <div class="status-pill">
+            <div class="dot green"></div>
+            <div>
+              <strong>On the job</strong>
+              <span>Your three priorities are the working list.</span>
+            </div>
+          </div>
+          <div class="status-pill">
+            <div class="dot" id="answersDot"></div>
+            <div>
+              <strong id="answersLabel">Questions incomplete</strong>
+              <span id="answersDetail">Finish the short set so we don’t guess on software or process.</span>
+            </div>
+          </div>
+          <div class="status-pill">
+            <div class="dot" id="samplesDot"></div>
+            <div>
+              <strong id="samplesLabel">Samples not planned yet</strong>
+              <span id="samplesDetail">Redacted examples make the missing-docs and planning work much stronger.</span>
+            </div>
+          </div>
+        </div>
+        <div class="stack" style="margin-top:16px">
+          <button class="btn gold" id="copySummary">Copy summary to send</button>
+          <button class="btn ghost" id="downloadJson">Download answers JSON</button>
+          <button class="btn ghost" id="resetAnswers">Reset answers on this phone</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-pad">
+        <p class="hero-line" style="font-size:16px">Review</p>
+        <div id="reviewList"></div>
+      </div>
+    </div>
+  </section>
+
+  <p class="footer-note">Answers stay on this device until you copy or download them. Don’t paste live client data into free public AI tools.</p>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  const STORAGE_KEY = "mike-workspace-v1";
+  const QUESTIONS = [
+    {
+      id: "software",
+      title: "What tax software do you prepare returns in?",
+      help: "Name is enough. Version optional.",
+      type: "choice_other",
+      choices: [
+        { id: "drake", label: "Drake" },
+        { id: "lacerte", label: "Lacerte" },
+        { id: "ultratax", label: "UltraTax" },
+        { id: "proseries", label: "ProSeries" },
+        { id: "proconnect", label: "ProConnect" },
+        { id: "other", label: "Other / not sure" }
+      ]
+    },
+    {
+      id: "import_today",
+      title: "How do numbers get in today?",
+      help: "Pick the closest match.",
+      type: "choice",
+      choices: [
+        { id: "hand", label: "Mostly hand-entered", sub: "Typing from paper or PDFs" },
+        { id: "some_import", label: "Some imports already", sub: "CSV, PDF, bank, or organizer" },
+        { id: "mixed", label: "Mix of both", sub: "Depends on the form" },
+        { id: "unsure", label: "Not sure / varies by staff" }
+      ]
+    },
+    {
+      id: "first_win",
+      title: "What counts as a useful first win?",
+      help: "This keeps us from overbuilding.",
+      type: "choice",
+      choices: [
+        { id: "draft_review", label: "Draft fields for review", sub: "Staff checks, then enters or imports" },
+        { id: "true_auto", label: "True auto-entry into the software", sub: "Only if your software allows a clean path" },
+        { id: "either", label: "Either is fine", sub: "Prefer whatever is reliable first" }
+      ]
+    },
+    {
+      id: "missing_docs_source",
+      title: "Missing-documents list should come from…",
+      help: "We can do both later. What’s most useful first?",
+      type: "choice",
+      choices: [
+        { id: "return", label: "The tax return" },
+        { id: "organizer", label: "Organizer / checklist" },
+        { id: "both", label: "Both" },
+        { id: "unsure", label: "Not sure yet" }
+      ]
+    },
+    {
+      id: "samples",
+      title: "Can you share 1–2 fully redacted sample returns?",
+      help: "Black out names, SSNs, account numbers, addresses.",
+      type: "choice_other",
+      choices: [
+        { id: "yes_soon", label: "Yes — I can send soon" },
+        { id: "yes_help", label: "Yes — tell me what to redact" },
+        { id: "later", label: "Later / not yet" },
+        { id: "other", label: "Other" }
+      ]
+    },
+    {
+      id: "planning_example",
+      title: "Do you have one next-year planning note you already like?",
+      help: "Redacted is fine. This becomes the quality bar.",
+      type: "choice",
+      choices: [
+        { id: "yes", label: "Yes — I can send one" },
+        { id: "partial", label: "I have pieces, not a polished one" },
+        { id: "no", label: "Not yet" }
+      ]
+    },
+    {
+      id: "planning_approver",
+      title: "Who must approve planning language before a client sees it?",
+      type: "choice",
+      choices: [
+        { id: "mike_only", label: "Me only" },
+        { id: "reviewer", label: "Me + a reviewer / partner" },
+        { id: "firm_policy", label: "Firm policy / varies" },
+        { id: "unsure", label: "Not sure yet" }
+      ]
+    }
+  ];
+
+  const SAMPLE_PATHS = [
+    { id: "text", label: "Text / iMessage" },
+    { id: "email", label: "Email" },
+    { id: "portal", label: "Secure portal / shared folder" },
+    { id: "later", label: "Decide later" }
+  ];
+
+  const state = loadState();
+
+  const els = {
+    progressBar: document.getElementById("progressBar"),
+    progressCount: document.getElementById("progressCount"),
+    headerTitle: document.getElementById("headerTitle"),
+    headerSub: document.getElementById("headerSub"),
+    questionCard: document.getElementById("questionCard"),
+    extraNote: document.getElementById("extraNote"),
+    samplePathChoices: document.getElementById("samplePathChoices"),
+    reviewList: document.getElementById("reviewList"),
+    doneBanner: document.getElementById("doneBanner"),
+    answersDot: document.getElementById("answersDot"),
+    answersLabel: document.getElementById("answersLabel"),
+    answersDetail: document.getElementById("answersDetail"),
+    samplesDot: document.getElementById("samplesDot"),
+    samplesLabel: document.getElementById("samplesLabel"),
+    samplesDetail: document.getElementById("samplesDetail"),
+    toast: document.getElementById("toast"),
+  };
+
+  function defaultState() {
+    return {
+      answers: {},
+      otherText: {},
+      skipped: {},
+      focusIndex: 0,
+      extraNote: "",
+      samplePath: "",
+      submittedAt: null,
+      updatedAt: null
+    };
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return defaultState();
+      return Object.assign(defaultState(), JSON.parse(raw));
+    } catch (e) {
+      return defaultState();
+    }
+  }
+
+  function saveState() {
+    state.updatedAt = new Date().toISOString();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    paintChrome();
+  }
+
+  function toast(msg) {
+    els.toast.textContent = msg;
+    els.toast.classList.add("show");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => els.toast.classList.remove("show"), 1800);
+  }
+
+  function answeredCount() {
+    return QUESTIONS.filter(q => state.answers[q.id] || state.skipped[q.id]).length;
+  }
+
+  function allAnswered() {
+    return answeredCount() >= QUESTIONS.length;
+  }
+
+  function paintChrome() {
+    const n = answeredCount();
+    const total = QUESTIONS.length;
+    const pct = Math.round((n / total) * 100);
+    els.progressBar.style.width = pct + "%";
+    els.progressCount.textContent = n + " / " + total;
+
+    if (allAnswered()) {
+      els.headerTitle.textContent = "Ready to send";
+      els.headerSub.textContent = "Review once, copy the summary, and text it back when convenient.";
+      els.doneBanner.classList.remove("hidden");
+      els.answersDot.classList.add("green");
+      els.answersLabel.textContent = "Questions complete";
+      els.answersDetail.textContent = "Copy the summary so we can lock the path without more back-and-forth.";
+    } else {
+      els.headerTitle.textContent = "Your priorities";
+      els.headerSub.textContent = "We’re on it. A few short answers keep us moving without long texts.";
+      els.doneBanner.classList.add("hidden");
+      els.answersDot.classList.remove("green");
+      els.answersLabel.textContent = "Questions incomplete";
+      els.answersDetail.textContent = (total - n) + " left · about two minutes.";
+    }
+
+    if (state.samplePath || (state.answers.samples && state.answers.samples !== "later")) {
+      els.samplesDot.classList.add("green");
+      els.samplesLabel.textContent = "Sample plan noted";
+      els.samplesDetail.textContent = labelFor("samples", state.answers.samples) + (state.samplePath ? " · via " + samplePathLabel(state.samplePath) : "");
+    } else {
+      els.samplesDot.classList.remove("green");
+      els.samplesLabel.textContent = "Samples not planned yet";
+      els.samplesDetail.textContent = "Redacted examples make the missing-docs and planning work much stronger.";
+    }
+
+    paintReview();
+  }
+
+  function labelFor(qid, value) {
+    if (!value) return "—";
+    if (value === "__skip__") return "Skipped";
+    const q = QUESTIONS.find(x => x.id === qid);
+    if (!q) return value;
+    const c = (q.choices || []).find(x => x.id === value);
+    if (!c) return value;
+    const extra = state.otherText[qid];
+    if ((value === "other" || qid === "software") && extra) return c.label + " — " + extra;
+    if (qid === "software" && value !== "other") return c.label + (extra ? " — " + extra : "");
+    return c.label;
+  }
+
+  function samplePathLabel(id) {
+    const c = SAMPLE_PATHS.find(x => x.id === id);
+    return c ? c.label : id;
+  }
+
+  function setTab(name) {
+    document.querySelectorAll(".tab").forEach(t => {
+      t.setAttribute("aria-selected", t.dataset.tab === name ? "true" : "false");
+    });
+    document.querySelectorAll(".panel").forEach(p => {
+      p.classList.toggle("active", p.id === "panel-" + name);
+    });
+    if (name === "questions") renderQuestion();
+    if (name === "status") paintChrome();
+    if (name === "more") renderSamplePaths();
+  }
+
+  function renderSamplePaths() {
+    els.extraNote.value = state.extraNote || "";
+    els.samplePathChoices.innerHTML = "";
+    SAMPLE_PATHS.forEach(c => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "choice";
+      b.setAttribute("aria-pressed", state.samplePath === c.id ? "true" : "false");
+      b.textContent = c.label;
+      b.addEventListener("click", () => {
+        state.samplePath = c.id;
+        saveState();
+        renderSamplePaths();
+        toast("Saved");
+      });
+      els.samplePathChoices.appendChild(b);
+    });
+  }
+
+  function currentQuestion() {
+    const idx = Math.min(Math.max(state.focusIndex, 0), QUESTIONS.length - 1);
+    return { q: QUESTIONS[idx], idx };
+  }
+
+  function renderQuestion() {
+    if (allAnswered() && state.focusIndex >= QUESTIONS.length) {
+      els.questionCard.innerHTML = `
+        <div class="banner-done">All set on this device.</div>
+        <p class="hero-line">Questions complete</p>
+        <p class="muted">Copy the summary from Status and send it back when ready. You can still change any answer.</p>
+        <div class="stack" style="margin-top:14px">
+          <button class="btn gold" id="goStatus">Open status & copy</button>
+          <button class="btn ghost" id="reviewFirst">Review answers</button>
+        </div>`;
+      document.getElementById("goStatus").onclick = () => setTab("status");
+      document.getElementById("reviewFirst").onclick = () => { state.focusIndex = 0; saveState(); renderQuestion(); };
+      return;
+    }
+
+    const { q, idx } = currentQuestion();
+    const selected = state.answers[q.id] || "";
+    const otherVal = state.otherText[q.id] || "";
+    const needsOther = selected === "other" || (q.id === "software" && selected && selected !== "other");
+
+    let choicesHtml = q.choices.map(c => {
+      const pressed = selected === c.id;
+      return `<button type="button" class="choice" data-choice="${c.id}" aria-pressed="${pressed ? "true" : "false"}">${escapeHtml(c.label)}${c.sub ? `<small>${escapeHtml(c.sub)}</small>` : ""}</button>`;
+    }).join("");
+
+    els.questionCard.innerHTML = `
+      <div class="q-meta">
+        <div class="step">Question ${idx + 1} of ${QUESTIONS.length}</div>
+        <button type="button" class="skip" id="skipBtn">Skip for now</button>
+      </div>
+      <p class="question">${escapeHtml(q.title)}</p>
+      ${q.help ? `<p class="help">${escapeHtml(q.help)}</p>` : ""}
+      <div class="stack" id="choiceStack">${choicesHtml}</div>
+      <div id="otherWrap" class="${needsOther ? "" : "hidden"}" style="margin-top:12px">
+        <label class="field">${q.id === "software" ? "Software name / notes" : "Please specify"}
+          <input type="text" id="otherInput" value="${escapeAttr(otherVal)}" placeholder="${q.id === "software" ? "e.g. Drake 2025" : "Type here"}" />
+        </label>
+      </div>
+      <div class="nav-row">
+        <button class="btn ghost" id="backBtn" ${idx === 0 ? "disabled" : ""}>Back</button>
+        <button class="btn primary" id="nextBtn">${idx === QUESTIONS.length - 1 ? "Finish" : "Next"}</button>
+      </div>`;
+
+    els.questionCard.querySelectorAll("[data-choice]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-choice");
+        state.answers[q.id] = id;
+        delete state.skipped[q.id];
+        if (id !== "other" && q.id !== "software") delete state.otherText[q.id];
+        saveState();
+        renderQuestion();
+      });
+    });
+
+    const otherInput = document.getElementById("otherInput");
+    if (otherInput) {
+      otherInput.addEventListener("input", () => {
+        state.otherText[q.id] = otherInput.value;
+        saveState();
+      });
+    }
+
+    document.getElementById("backBtn").onclick = () => {
+      state.focusIndex = Math.max(0, idx - 1);
+      saveState();
+      renderQuestion();
+    };
+    document.getElementById("nextBtn").onclick = () => {
+      if (!state.answers[q.id] && !state.skipped[q.id]) {
+        toast("Pick an option or skip");
+        return;
+      }
+      if (state.answers[q.id] === "other" && !(state.otherText[q.id] || "").trim()) {
+        toast("Add a short note for Other");
+        return;
+      }
+      if (idx >= QUESTIONS.length - 1) {
+        state.focusIndex = QUESTIONS.length;
+        state.submittedAt = new Date().toISOString();
+        saveState();
+        setTab("status");
+        toast("Saved");
+        return;
+      }
+      state.focusIndex = idx + 1;
+      saveState();
+      renderQuestion();
+    };
+    document.getElementById("skipBtn").onclick = () => {
+      state.skipped[q.id] = true;
+      delete state.answers[q.id];
+      state.focusIndex = Math.min(QUESTIONS.length, idx + 1);
+      saveState();
+      renderQuestion();
+    };
+  }
+
+  function paintReview() {
+    const parts = QUESTIONS.map(q => {
+      const val = state.skipped[q.id] ? "__skip__" : state.answers[q.id];
+      return `<div class="review-item">
+        <div class="k">${escapeHtml(q.title)}</div>
+        <div class="v">${escapeHtml(labelFor(q.id, val))}</div>
+        <button type="button" data-edit="${q.id}">Change</button>
+      </div>`;
+    });
+    if (state.extraNote) {
+      parts.push(`<div class="review-item"><div class="k">Extra note</div><div class="v">${escapeHtml(state.extraNote)}</div></div>`);
+    }
+    if (state.samplePath) {
+      parts.push(`<div class="review-item"><div class="k">Sample send path</div><div class="v">${escapeHtml(samplePathLabel(state.samplePath))}</div></div>`);
+    }
+    els.reviewList.innerHTML = parts.join("") || `<p class="muted">No answers yet.</p>`;
+    els.reviewList.querySelectorAll("[data-edit]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-edit");
+        const idx = QUESTIONS.findIndex(q => q.id === id);
+        if (idx >= 0) {
+          state.focusIndex = idx;
+          saveState();
+          setTab("questions");
+        }
+      });
+    });
+  }
+
+  function buildSummary() {
+    const lines = [
+      "Mike priorities workspace answers",
+      "Date: " + new Date().toLocaleString(),
+      ""
+    ];
+    QUESTIONS.forEach((q, i) => {
+      const val = state.skipped[q.id] ? "__skip__" : state.answers[q.id];
+      lines.push((i + 1) + ". " + q.title);
+      lines.push("   " + labelFor(q.id, val));
+    });
+    if (state.extraNote) {
+      lines.push("");
+      lines.push("Extra note:");
+      lines.push(state.extraNote);
+    }
+    if (state.samplePath) {
+      lines.push("");
+      lines.push("Sample send path: " + samplePathLabel(state.samplePath));
+    }
+    lines.push("");
+    lines.push("(Generated on phone · no live client data requested)");
+    return lines.join("\n");
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+  function escapeAttr(s) {
+    return escapeHtml(s).replace(/'/g, "&#39;");
+  }
+
+  // Tabs
+  document.querySelectorAll(".tab").forEach(tab => {
+    tab.addEventListener("click", () => setTab(tab.dataset.tab));
+  });
+  document.getElementById("homeStart").onclick = () => {
+    if (allAnswered()) state.focusIndex = 0;
+    setTab("questions");
+  };
+  document.getElementById("homeNotes").onclick = () => setTab("more");
+  document.getElementById("saveMore").onclick = () => {
+    state.extraNote = els.extraNote.value.trim();
+    saveState();
+    toast("Notes saved");
+  };
+  document.getElementById("copySummary").onclick = async () => {
+    const text = buildSummary();
+    try {
+      await navigator.clipboard.writeText(text);
+      toast("Summary copied");
+    } catch (e) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      ta.remove();
+      toast("Summary copied");
+    }
+  };
+  document.getElementById("downloadJson").onclick = () => {
+    const blob = new Blob([JSON.stringify({
+      intake_id: "mike-priorities-v1",
+      completed_at: new Date().toISOString(),
+      answers: state.answers,
+      otherText: state.otherText,
+      skipped: state.skipped,
+      extraNote: state.extraNote,
+      samplePath: state.samplePath
+    }, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "mike-priorities-answers.json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast("Download started");
+  };
+  document.getElementById("resetAnswers").onclick = () => {
+    if (!confirm("Clear answers saved on this phone?")) return;
+    localStorage.removeItem(STORAGE_KEY);
+    Object.assign(state, defaultState());
+    paintChrome();
+    renderQuestion();
+    renderSamplePaths();
+    toast("Cleared");
+  };
+
+  // init
+  paintChrome();
+  renderSamplePaths();
+  renderQuestion();
+})();
+</script>
+</body>
+</html>
