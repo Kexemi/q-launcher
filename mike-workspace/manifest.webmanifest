@@ -1,7 +1,7 @@
 {
-  "name": "Priorities Workspace",
-  "short_name": "Priorities",
-  "description": "Quick answers and next steps for the three tax priorities.",
+  "name": "A Few Questions",
+  "short_name": "Questions",
+  "description": "A few quick questions for Mike.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
