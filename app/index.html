@@ -18,8 +18,11 @@ main{position:relative;overflow:auto;padding:0 16px 22px}.view{display:none;min-
 .world-now{position:absolute;left:10%;right:10%;bottom:23%;padding:8px 12px;border-left:2px solid var(--gold);background:rgba(5,11,9,.66);font-size:10px;color:var(--muted)}.world-now b{display:block;color:var(--ink);font-size:11px}.world-now em{font-style:normal;color:var(--gold)}
 .panel{max-width:620px;margin:8px auto 0}.hero{padding:22px;border:1px solid var(--line);border-radius:20px;background:rgba(13,27,22,.85)}.hero.contradicted{border-color:rgba(226,118,101,.55)}.hero h2{font:600 25px Georgia;margin:7px 0}.hero p{color:var(--muted);line-height:1.5}.metric{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:12px 0;border-top:1px solid var(--line)}.metric span{flex:none}.metric b{color:var(--jade);text-align:right;overflow-wrap:anywhere;max-width:68%}.tap{display:block;margin-top:8px;font-size:10px;color:var(--jade);letter-spacing:.08em;text-transform:uppercase}.source{padding:10px 0;border-bottom:1px solid var(--line)}.source summary{font-size:12px;color:var(--ink)}.source small{display:block;padding-top:6px;color:var(--muted);overflow-wrap:anywhere}
 .card{margin-top:12px;padding:18px;border:1px solid var(--line);border-radius:17px;background:rgba(255,255,255,.035)}.card h3{font:600 18px Georgia;margin:0 0 7px}.card p{color:var(--muted);margin:0;line-height:1.45}.proof{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line)}.proof:last-child{border:0}.state{font-size:11px;text-transform:uppercase;color:var(--jade)}.state.pending{color:var(--gold)}.state.unknown{color:var(--fog)}.state.contradicted{color:var(--red)}.front{padding:11px 0;border-bottom:1px solid var(--line)}.front summary{display:flex;justify-content:space-between;gap:10px;font-size:12px}.front small{display:block;color:var(--muted);line-height:1.45;padding-top:8px}.front strong{color:var(--gold);font-weight:600}
-.empty{text-align:center;padding:46px 18px}.empty h2{font:600 26px Georgia}.empty p{color:var(--muted);line-height:1.55}.question{margin-top:12px}.question button,.action{width:100%;min-height:50px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.05);color:var(--ink);font-size:15px;margin-top:9px}.question input{width:100%;min-height:50px;background:#07100e;border:1px solid var(--line);border-radius:13px;color:var(--ink);padding:12px;font-size:16px}
-nav{display:grid;grid-template-columns:repeat(3,1fr);padding:8px 12px calc(8px + var(--safe));border-top:1px solid var(--line);background:rgba(5,11,9,.96);backdrop-filter:blur(15px);z-index:6}nav button{border:0;background:transparent;color:#7f8983;min-height:48px;font-size:12px}nav button.active{color:var(--jade)}nav b{display:block;font-size:18px;margin-bottom:2px}
+.question button,.action{width:100%;min-height:50px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.05);color:var(--ink);font-size:15px;margin-top:9px}.question input{width:100%;min-height:50px;background:#07100e;border:1px solid var(--line);border-radius:13px;color:var(--ink);padding:12px;font-size:16px}
+.founder-shell{max-width:620px;margin:8px auto 0;display:grid;gap:12px}.founder-presence{padding:20px;border:1px solid rgba(97,215,161,.35);border-radius:24px;background:radial-gradient(circle at 50% 0,rgba(97,215,161,.12),transparent 52%),rgba(13,27,22,.88);text-align:center}.founder-presence.error{border-color:rgba(226,118,101,.65)}.founder-status{display:inline-flex;align-items:center;gap:8px;min-height:30px;padding:6px 11px;border:1px solid var(--line);border-radius:999px;color:var(--jade);font-size:12px}.founder-status:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 10px currentColor}.founder-presence h2{font:600 28px Georgia;margin:14px 0 5px}.founder-presence>p{margin:0 auto;color:var(--muted);max-width:420px;line-height:1.5}.founder-ptt{width:132px;height:132px;margin:20px auto 10px;border:1px solid rgba(97,215,161,.55);border-radius:50%;background:linear-gradient(160deg,rgba(97,215,161,.22),rgba(97,215,161,.06));color:var(--ink);font-weight:750;font-size:15px;box-shadow:0 0 0 9px rgba(97,215,161,.04),0 20px 45px rgba(0,0,0,.35)}.founder-ptt.listening{border-color:var(--red);background:linear-gradient(160deg,rgba(226,118,101,.3),rgba(226,118,101,.08));box-shadow:0 0 0 9px rgba(226,118,101,.06),0 20px 45px rgba(0,0,0,.35)}.founder-ptt:disabled{opacity:.55}.founder-privacy{font-size:11px;color:var(--muted);line-height:1.45}.founder-controls{display:flex;justify-content:center;gap:8px;margin-top:14px}.founder-controls button{min-width:104px;min-height:42px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.045);color:var(--ink);font-weight:700}.founder-controls button.on{color:var(--gold);border-color:rgba(223,189,120,.48)}.founder-context{padding:9px 12px;border-left:2px solid var(--jade);border-radius:0 12px 12px 0;background:rgba(97,215,161,.06);color:var(--muted);font-size:11px;line-height:1.4;overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}.founder-context[hidden]{display:none}.founder-copy{padding:17px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.035)}.founder-copy h3{font:600 15px Georgia;margin:0 0 7px}.founder-copy p{margin:0;color:var(--muted);line-height:1.52;white-space:pre-wrap;overflow-wrap:anywhere}.founder-copy .answer{color:var(--ink);font-size:16px}.founder-meta{display:flex;justify-content:space-between;gap:12px;align-items:center;color:var(--muted);font-size:10px}.founder-meta code{color:var(--jade);overflow-wrap:anywhere}.founder-history-wrap{border-top:1px solid var(--line);padding-bottom:8px}.founder-history-wrap summary{cursor:pointer;list-style:none;padding:8px 2px;color:var(--muted);font-size:11px}.founder-history-wrap summary::-webkit-details-marker{display:none}.founder-history-wrap summary:after{content:" · open";color:var(--jade)}.founder-history-wrap[open] summary:after{content:" · close"}.founder-history{display:grid;gap:9px}.founder-turn{padding:13px;border-left:2px solid var(--jade);background:rgba(255,255,255,.025);border-radius:0 13px 13px 0}.founder-turn b{display:block;font-size:12px;margin-bottom:5px}.founder-turn p{margin:0;color:var(--muted);font-size:12px;line-height:1.45;white-space:pre-wrap}.founder-error{color:var(--red)!important}.founder-legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media(max-height:720px) and (max-width:699px){.founder-shell.has-turns{gap:8px}.founder-shell.has-turns .founder-presence{padding:10px 14px;border-radius:18px}.founder-shell.has-turns .founder-status{min-height:24px;padding:3px 9px;font-size:10px}.founder-shell.has-turns .founder-presence h2{font-size:21px;margin:5px 0 2px}.founder-shell.has-turns .founder-presence>p{display:none}.founder-shell.has-turns .founder-ptt{width:76px;height:76px;margin:7px auto 5px;font-size:12px;box-shadow:0 0 0 6px rgba(97,215,161,.04),0 12px 28px rgba(0,0,0,.3)}.founder-shell.has-turns .founder-privacy{font-size:10px}.founder-shell.has-turns .founder-controls{margin-top:7px}.founder-shell.has-turns .founder-controls button{min-height:34px;min-width:98px;font-size:11px}.founder-shell.has-turns .founder-context{padding:7px 10px;font-size:10px}.founder-shell.has-turns .founder-copy{padding:12px}.founder-shell.has-turns .founder-copy h3{font-size:13px;margin-bottom:5px}.founder-shell.has-turns .founder-copy .answer{font-size:14px;line-height:1.42}}
+@media(min-width:700px) and (max-height:950px){.founder-shell.has-turns{max-width:940px;grid-template-columns:minmax(300px,350px) minmax(0,1fr);grid-template-areas:"presence response" "context response" "meta response" "transcript transcript" "history history";align-items:start}.founder-shell.has-turns .founder-presence{grid-area:presence;padding:14px}.founder-shell.has-turns .founder-presence h2{font-size:24px;margin:7px 0 3px}.founder-shell.has-turns .founder-presence>p{font-size:13px;line-height:1.35}.founder-shell.has-turns .founder-ptt{width:100px;height:100px;margin:10px auto 7px}.founder-shell.has-turns .founder-controls{margin-top:8px}.founder-shell.has-turns .founder-context{grid-area:context}.founder-shell.has-turns .founder-response-card{grid-area:response}.founder-shell.has-turns .founder-transcript-card{grid-area:transcript}.founder-shell.has-turns .founder-meta{grid-area:meta}.founder-shell.has-turns .founder-history-wrap{grid-area:history}}
+nav{display:grid;grid-template-columns:repeat(4,1fr);padding:8px 12px calc(8px + var(--safe));border-top:1px solid var(--line);background:rgba(5,11,9,.96);backdrop-filter:blur(15px);z-index:6}nav button{border:0;background:transparent;color:#7f8983;min-height:48px;font-size:12px}nav button.active{color:var(--jade)}nav b{display:block;font-size:18px;margin-bottom:2px}
 #pair{display:none;position:fixed;inset:0;background:#050b09;z-index:20;padding:24px;align-items:center;justify-content:center;text-align:center}#pair.show{display:flex}#pair a{display:block;margin-top:18px;padding:14px 20px;border-radius:13px;background:var(--jade);color:#07100e;text-decoration:none;font-weight:700}#fatal{display:none;position:fixed;left:16px;right:16px;bottom:calc(74px + var(--safe));z-index:5;padding:14px 108px 14px 16px;border:1px solid var(--line);border-radius:16px;background:#101a17;box-shadow:0 16px 40px #000;text-align:left}#fatal.show{display:block}#fatal h2{font-size:17px;margin:0}#fatal p{font-size:12px;color:var(--muted);margin:4px 0}#fatal button{position:absolute;right:10px;top:10px;padding:10px 12px;border:0;border-radius:10px;background:var(--jade);color:#07100e;font-weight:700}
 @media(min-width:700px){.world{min-height:650px}.fogbank{left:16%;right:16%}.region{width:190px;height:190px}}
 </style></head><body>
@@ -33,19 +36,36 @@ nav{display:grid;grid-template-columns:repeat(3,1fr);padding:8px 12px calc(8px +
 <div id="fogbank" class="fogbank"></div>
 </div></section>
 <section id="decisions" class="view" data-view="decisions"><div id="decision-stage" class="panel"></div></section>
+<section id="founder-view" class="view" data-view="founder"><div class="founder-shell">
+  <div class="founder-presence" id="founder-presence">
+    <div class="founder-status" id="founder-status">Available</div>
+    <h2>Founder</h2>
+    <p>Talk through the move. One thread follows you between phone and PC.</p>
+    <button class="founder-ptt" id="founder-ptt" type="button">Tap to talk</button>
+    <div class="founder-privacy" id="founder-privacy">Not listening · recording starts only when you tap · audio is not kept</div>
+    <div class="founder-controls"><button id="founder-mute" type="button">Mute voice</button><button id="founder-cancel" type="button">Cancel local</button></div>
+    <div class="founder-legend" aria-hidden="true">Available Listening Transcribing Thinking Speaking Muted Error</div>
+  </div>
+  <div class="founder-context" id="founder-context" hidden></div>
+  <div class="founder-copy founder-response-card"><h3>Founder response</h3><p class="answer" id="founder-response">Ready when you are.</p></div>
+  <div class="founder-copy founder-transcript-card"><h3>You said</h3><p id="founder-transcript">Your words will appear here.</p></div>
+  <div class="founder-meta"><span>Spoken on this device</span><span>one shared thread · <code id="founder-cursor">connecting</code></span></div>
+  <details class="founder-history-wrap" id="founder-history-wrap" hidden><summary>Earlier turns</summary><div class="founder-history" id="founder-history"></div></details>
+</div></section>
 <section id="focus" class="view" data-view="focus"><div id="focus-stage" class="panel"></div></section>
 </main>
-<nav aria-label="AI-OS views"><button data-go="world" class="active"><b>⌂</b>World</button><button data-go="decisions"><b>◇</b>Decisions</button><button data-go="focus"><b>◎</b>Focus</button></nav>
+<nav aria-label="AI-OS views"><button data-go="world" class="active"><b>⌂</b>World</button><button data-go="founder"><b>◉</b>Founder</button><button data-go="decisions"><b>◇</b>Decisions</button><button data-go="focus"><b>◎</b>Focus</button></nav>
 </div>
 <div id="pair"><div><h2>Reconnect this phone</h2><p>Pair once through the trusted AI-OS launcher.</p><a href="../#app">Open pairing</a></div></div>
 <div id="fatal"><div><h2>AI-OS is reconnecting</h2><p>The app stayed open. Your work is safe.</p><button id="retry">Try now</button></div></div>
 <script>
 "use strict";
-const APP_BUILD="build-7232690c0d09275a";
+const APP_BUILD="build-b3bbb4182f01bd18";
 const CANONICAL_APP_PATH="/q-launcher/app/";
 const UPDATE_RETRY_MS=60000;
 const TOKEN_KEY="aios_token"; const CAMPAIGN="frontier-lab-acceptance";
-const S={base:"",token:"",app:null,cards:null,view:"world",busy:false};
+const S={base:"",token:"",app:null,cards:null,view:"world",busy:false,founder:null,founderBusy:false,founderMuted:false};
+const FOUNDER_CONTEXT_MAX_CHARS=96;
 const $=s=>document.querySelector(s);
 function connection(mode,text){const e=$("#connection");e.className="status "+mode;e.lastElementChild.textContent=text}
 let updateCheckActive=false,updateRetryTimer=0;
@@ -86,13 +106,117 @@ async function api(path,opts={}){let last;for(let attempt=0;attempt<2;attempt++)
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function stateClass(v){v=String(v||"").toLowerCase();if(v==="contradicted")return"contradicted";if(["not_submitted","not_yet_verified","incomplete","pending","stale"].includes(v))return"pending";if(["unknown","unavailable"].includes(v))return"unknown";return"verified"}
 function epistemicLabel(v){return String(v||"").toLowerCase()==="contradicted"?"record mismatch":String(v||"").toLowerCase()==="verified"?"checked":"not fully checked"}
-function show(view,push=true){if(!["world","decisions","focus"].includes(view))view="world";S.view=view;document.querySelectorAll(".view").forEach(e=>e.classList.toggle("active",e.id===view));document.querySelectorAll("nav button").forEach(e=>e.classList.toggle("active",e.dataset.go===view));if(push&&location.hash!=="#"+view)history.pushState({view},"","#"+view);if(view==="decisions")renderDecisions();if(view==="focus")renderFocus()}
+function show(view,push=true){if(!["world","founder","decisions","focus"].includes(view))view="world";S.view=view;document.querySelectorAll(".view").forEach(e=>e.classList.toggle("active",e.id===view||e.dataset.view===view));document.querySelectorAll("nav button").forEach(e=>e.classList.toggle("active",e.dataset.go===view));if(push&&location.hash!=="#"+view)history.pushState({view},"","#"+view);if(view==="founder")loadFounderState();if(view==="decisions")renderDecisions();if(view==="focus")renderFocus()}
 function renderWorld(){const p=S.app.primary_region,n=S.app.north_star||{},portfolio=S.app.portfolio||{status:"unavailable",fronts:[],active_count:0,incubating_count:0,runtime_contradiction_count:0},region=$("#primary-region");region.classList.toggle("contradicted",p.epistemic_state==="contradicted");$("#beacon-title").textContent=n.label||"North star unavailable";$("#beacon-state").textContent=(n.epistemic_state==="owner_declared"?"owner-declared · ":"")+(n.plain_language||"");$("#world-progress").textContent=p.decision_progress.answered+"/"+p.decision_progress.total;$("#world-state").innerHTML=esc(p.world_summary||p.plain_language)+`<span class="tap">tap for proof &amp; next action</span>`;$("#world-now").innerHTML=`<span>Now</span><b>${esc(p.next_automatic_action)}</b><em>Owner needed: ${esc(p.owner_need)}</em>`;const fog=(S.app.regions||[]).filter(r=>r.fogged),fronts=portfolio.fronts||[],labels=fronts.map(f=>esc(String(f.label||f.id).split(" — ")[0])).join(" · "),mismatch=Number(portfolio.runtime_contradiction_count||0);$("#fogbank").innerHTML=`<button id="portfolio-summary" class="portfolio-summary ${mismatch?"contradicted":""}"><b>${esc(portfolio.active_count)} active · ${esc(portfolio.incubating_count)} incubating</b><span>${labels||"Portfolio source unavailable"}</span><small>${mismatch?mismatch+" runtime mismatch · ":""}${fog.length} other regions remain in honest fog · tap for gates</small></button>`;$("#portfolio-summary").onclick=()=>show("focus")}
 function renderFocus(){if(!S.app)return;const p=S.app.primary_region,src=S.app.source_status||{},sources=S.app.proof_sources||[],portfolio=S.app.portfolio||{fronts:[],active_count:0,incubating_count:0,runtime_contradiction_count:0,status:"unavailable"},fronts=portfolio.fronts||[],portfolioCard=`<div class="card"><h3>Portfolio · ${esc(portfolio.active_count)} active + ${esc(portfolio.incubating_count)} incubating</h3><p>${portfolio.runtime_contradiction_count?esc(portfolio.runtime_contradiction_count)+" runtime mismatch is visible below.":"No runtime contradiction is compiled."}</p>${fronts.length?fronts.map(f=>`<details class="front"><summary><span>${esc(f.label)}</span><span class="state ${stateClass(f.epistemic_state)}">${esc(f.allocation_state)} · ${esc(f.epistemic_state)}</span></summary><small><strong>Next artifact:</strong> ${esc(f.next_artifact_due)}<br><strong>Gate:</strong> ${esc(f.gate)}<br><strong>Opportunity cost:</strong> ${esc(f.opportunity_cost_displacement)}<br><strong>Proof:</strong> ${esc(f.artifact?.label)} · ${esc(f.artifact?.sha256_prefix)} · ${esc(f.artifact?.path_tail)}</small></details>`).join(""):`<div class="proof"><span>Portfolio source</span><span class="state unknown">unavailable</span></div>`}</div>`;$("#focus-stage").innerHTML=`<div class="hero ${stateClass(p.epistemic_state)}"><span class="eyebrow">current diagnosis · ${esc(epistemicLabel(p.epistemic_state))}</span><h2>${esc(p.plain_language)}</h2><p>${esc(p.next_automatic_action)}</p><div class="metric"><span>Owner needed</span><b>${esc(p.owner_need)}</b></div><div class="metric"><span>Goal</span><b>${esc(p.objective)}</b></div><div class="metric"><span>Deadline</span><b>${esc(p.deadline)}</b></div></div>${portfolioCard}<div class="card"><h3>Proof</h3>${(p.proof||[]).map(x=>`<div class="proof"><span>${esc(x.label)}</span><span class="state ${stateClass(x.state)}">${esc(x.state)}${x.count!=null?" · "+x.count+"/"+x.expected:""}</span></div>`).join("")}</div><div class="card"><h3>Source check</h3><div class="proof"><span>Decision ledger</span><span class="state ${stateClass(src.question_state)}">${esc(src.question_state)}</span></div><div class="proof"><span>World snapshot</span><span class="state ${stateClass(src.stewardship_snapshot)}">${esc(src.stewardship_snapshot)}</span></div><div class="proof"><span>Portfolio snapshot</span><span class="state ${stateClass(src.portfolio_snapshot)}">${esc(src.portfolio_snapshot)}</span></div><div class="proof"><span>Checked</span><span class="state">${esc((S.app.generated_at||"").replace("T"," ").slice(0,19))+"Z"}</span></div>${sources.map(x=>`<details class="source"><summary>${esc(x.label)} · ${esc(x.sha256_prefix)}</summary><small>${esc(x.fidelity)} · ${esc(x.observed_at||"time unavailable")} · ${esc(x.path_tail)}</small></details>`).join("")}</div>`}
+let founderStream=null,founderRecorder=null,founderChunks=[],founderStopTimer=0,founderCursor="",founderCancelled=false,founderRequest=null;
+const founderPtt=$("#founder-ptt");
+function founderStateLabel(label,error=""){
+  const status=$("#founder-status"),presence=$("#founder-presence");
+  status.textContent=label;presence.classList.toggle("error",label==="Error");
+  if(error){$("#founder-response").textContent=error;$("#founder-response").classList.add("founder-error")}else{$("#founder-response").classList.remove("founder-error")}
+}
+function releaseFounderStream(){
+  if(!founderStream)return;
+  founderStream.getTracks().forEach(function(track){track.stop()});
+  founderStream=null;
+}
+function founderMimeType(){
+  const candidates=["audio/webm;codecs=opus","audio/webm","audio/mp4"];
+  return candidates.find(type=>typeof MediaRecorder!=="undefined"&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(type))||"";
+}
+function founderTurnId(){return (crypto.randomUUID?crypto.randomUUID():"fv-"+Date.now()+"-"+Math.random().toString(16).slice(2)).slice(0,120)}
+function founderContextSummary(turn){const raw=String(turn?.transcript||"").replace(/\s+/g," ").trim();return raw.length>FOUNDER_CONTEXT_MAX_CHARS?raw.slice(0,FOUNDER_CONTEXT_MAX_CHARS-1)+"…":raw}
+function renderFounderState(state){
+  if(!state||!state.cursor)return;
+  S.founder=state;founderCursor=state.cursor;$("#founder-cursor").dataset.cursor=founderCursor;$("#founder-cursor").textContent="connected";
+  const turns=state.turns||[],last=turns[turns.length-1];
+  $(".founder-shell").classList.toggle("has-turns",turns.length>0);
+  const earlierVoice=turns.slice(0,-1).reverse().find(turn=>turn.input_kind==="voice"),context=$("#founder-context");
+  context.hidden=!earlierVoice;context.textContent=earlierVoice?"Earlier voice · "+founderContextSummary(earlierVoice):"";
+  if(last){$("#founder-transcript").textContent=last.transcript||"";$("#founder-response").textContent=last.response_text||""}
+  const historyWrap=$("#founder-history-wrap");historyWrap.hidden=!turns.length;if(!turns.length)historyWrap.open=false;
+  $("#founder-history").innerHTML=turns.slice(-4).reverse().map(turn=>`<div class="founder-turn"><b>${esc(turn.input_kind==="voice"?"Voice turn":"Text turn")} · ${esc(String(turn.at||"").replace("T"," ").slice(0,16))}</b><p>${esc(turn.transcript)}</p><p>${esc(turn.response_text)}</p></div>`).join("");
+  if(founderRecorder?.state==="recording"){
+    founderStateLabel("Listening");
+    $("#founder-privacy").textContent="Listening now · tap to stop · audio will be deleted after transcription";
+  }else{
+    if(S.founderMuted)founderStateLabel("Muted");else if(state.run?.status==="error")founderStateLabel("Error",state.run.error||"The last turn was interrupted. Nothing was assumed executed.");else if(["transcribing","thinking"].includes(state.run?.status))founderStateLabel(state.run.status==="transcribing"?"Transcribing":"Thinking");else founderStateLabel("Available");
+    $("#founder-privacy").textContent="Not listening · recording starts only when you tap · audio is not kept";
+  }
+}
+async function loadFounderState(){
+  try{const state=await api("/api/founder/state");renderFounderState(state);return state}catch(e){founderStateLabel("Error","Founder is reconnecting. Your one thread remains on the private runtime.");return null}
+}
+async function founderApi(path,opts={}){
+  if(!S.base)await discover();
+  const ctl=new AbortController();founderRequest=ctl;
+  const timer=setTimeout(()=>ctl.abort(),260000);
+  try{
+    const response=await fetch(S.base+path,{...opts,headers:{'Content-Type':'application/json','X-AIOS-Token':S.token,...(opts.headers||{})},signal:ctl.signal});
+    const payload=await response.json().catch(()=>({ok:false,error:"Founder returned an unreadable response."}));
+    if(!response.ok){const failure=Error(payload.error||"Founder turn failed.");failure.payload=payload;failure.status=response.status;throw failure}
+    connection("online","connected");return payload;
+  }finally{clearTimeout(timer);if(founderRequest===ctl)founderRequest=null}
+}
+function bytesToBase64(buffer){
+  const bytes=new Uint8Array(buffer);let binary="";
+  for(let i=0;i<bytes.length;i+=32768)binary+=String.fromCharCode(...bytes.subarray(i,i+32768));
+  return btoa(binary);
+}
+function speakFounder(text){
+  if(S.founderMuted||!("speechSynthesis" in window)||!text){founderStateLabel(S.founderMuted?"Muted":"Available");return}
+  speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(text);utterance.rate=.98;
+  utterance.onstart=()=>founderStateLabel("Speaking");
+  utterance.onend=()=>founderStateLabel(S.founderMuted?"Muted":"Available");
+  utterance.onerror=()=>{founderStateLabel("Error");$("#founder-privacy").textContent="Spoken playback did not start · the full text response remains below"};
+  speechSynthesis.speak(utterance);
+}
+async function submitFounderAudio(blob){
+  if(!blob||!blob.size){founderStateLabel("Error","No speech was captured. Tap once and try again.");return}
+  if(blob.size>5*1024*1024){founderStateLabel("Error","That turn was too long. Keep voice turns under 45 seconds.");return}
+  S.founderBusy=true;founderPtt.disabled=true;founderStateLabel("Transcribing");
+  const client_turn_id=founderTurnId();
+  try{
+    if(!founderCursor){const state=await loadFounderState();if(!state)throw Error("Founder state unavailable")}
+    const audio_base64=bytesToBase64(await blob.arrayBuffer());
+    founderStateLabel("Thinking");
+    const result=await founderApi("/api/founder/turn",{method:"POST",body:JSON.stringify({client_turn_id,cursor:founderCursor,audio_base64,mime_type:blob.type||"audio/webm"})});
+    $("#founder-transcript").textContent=result.transcript||"";$("#founder-response").textContent=result.response_text||"";founderCursor=result.cursor||founderCursor;$("#founder-cursor").dataset.cursor=founderCursor;$("#founder-cursor").textContent="connected";
+    await loadFounderState();
+    if(!founderCancelled)speakFounder(result.response_text||"");
+  }catch(error){
+    if(error?.payload?.cursor){founderCursor=error.payload.cursor;$("#founder-cursor").dataset.cursor=founderCursor;$("#founder-cursor").textContent="connected"}
+    await loadFounderState();
+    founderStateLabel("Error",error?.name==="AbortError"?"The turn took too long. Nothing is claimed executed; reconnect to inspect the shared thread.":(error?.message||"Voice turn failed. The recording was not kept."));
+  }finally{S.founderBusy=false;founderPtt.disabled=false;founderPtt.textContent="Tap to talk";founderPtt.classList.remove("listening")}
+}
+async function startFounderListening(){
+  if(S.founderBusy||founderRecorder?.state==="recording")return;
+  if(!navigator.mediaDevices?.getUserMedia||typeof MediaRecorder==="undefined"){founderStateLabel("Error","Voice capture is unavailable in this browser. The shared Founder thread is still safe.");return}
+  founderCancelled=false;if("speechSynthesis" in window)speechSynthesis.cancel();
+  try{
+    founderStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false});
+    const mime=founderMimeType();founderChunks=[];founderRecorder=new MediaRecorder(founderStream,mime?{mimeType:mime,audioBitsPerSecond:64000}:undefined);
+    founderRecorder.addEventListener("dataavailable",event=>{if(event.data?.size)founderChunks.push(event.data)});
+    founderRecorder.addEventListener("stop",()=>{const type=founderRecorder?.mimeType||mime||"audio/webm";const blob=new Blob(founderChunks,{type});founderChunks=[];founderRecorder=null;if(!founderCancelled)submitFounderAudio(blob)});
+    founderRecorder.start(250);founderStateLabel("Listening");founderPtt.textContent="Tap to stop";founderPtt.classList.add("listening");$("#founder-privacy").textContent="Listening now · tap to stop · audio will be deleted after transcription";
+    founderStopTimer=setTimeout(stopFounderListening,45000);
+  }catch(error){releaseFounderStream();founderStateLabel("Error",error?.name==="NotAllowedError"?"Microphone access stayed off. Allow it only when you want to talk.":"The microphone could not start. Nothing was recorded.")}
+}
+function stopFounderListening(){
+  clearTimeout(founderStopTimer);founderStopTimer=0;
+  if(founderRecorder?.state==="recording")founderRecorder.stop();
+  releaseFounderStream();founderPtt.textContent="Tap to talk";founderPtt.classList.remove("listening");
+  if(founderCancelled)founderStateLabel(S.founderMuted?"Muted":"Available");
+}
+founderPtt.addEventListener('click',()=>{if(founderRecorder?.state==="recording")stopFounderListening();else startFounderListening()});
+$("#founder-mute").addEventListener("click",()=>{S.founderMuted=!S.founderMuted;$("#founder-mute").classList.toggle("on",S.founderMuted);$("#founder-mute").textContent=S.founderMuted?"Voice muted":"Mute voice";if(S.founderMuted&&"speechSynthesis" in window)speechSynthesis.cancel();founderStateLabel(S.founderMuted?"Muted":"Available")});
+$("#founder-cancel").addEventListener("click",()=>{founderCancelled=true;stopFounderListening();if("speechSynthesis" in window)speechSynthesis.cancel();$("#founder-privacy").textContent="Not listening · local capture and playback stopped · a running server turn, if any, continues safely";founderStateLabel(S.founderBusy?"Thinking":S.founderMuted?"Muted":"Available")});
 async function renderDecisions(){const stage=$("#decision-stage");stage.innerHTML=`<div class="empty"><p>Loading decisions…</p></div>`;try{const d=await api("/api/cards?campaign="+CAMPAIGN);S.cards=d;const cards=d.cards||[];if(!cards.length){stage.innerHTML=`<div class="empty"><span class="eyebrow">owner truth</span><h2>${d.answered||0}/${d.total||0} complete</h2><p>Nothing is waiting on you. AI-OS is reconciling your decisions into the application packet.</p></div>`;return}renderCard(cards[0])}catch(e){stage.innerHTML=`<div class="empty"><h2>Still reconnecting</h2><p>This view stayed open. No response was lost.</p><button class="action" id="dec-retry">Try again</button></div>`;$("#dec-retry").onclick=renderDecisions}}
 function optionAnswer(o){return /^(yes|no)$/i.test(String(o.k))?String(o.k):String(o.k)+": "+String(o.label||o.k)}
 function renderCard(card){const stage=$("#decision-stage");const options=card.answer_type==="yesno"?(card.yes_only?[{k:"yes",label:"Yes — I approve"}]:[{k:"yes",label:"Yes"},{k:"no",label:"No"}]):(card.options||[]);const multi=card.answer_type==="multi";const choices=multi?options.map(o=>`<label class="action" style="display:flex;align-items:center;gap:10px;padding:12px"><input type="checkbox" data-multi="${esc(optionAnswer(o))}"> ${esc(o.label||o.k)}</label>`).join("")+`<button class="action" id="submit-multi">Confirm selection</button>`:options.map(o=>`<button data-value="${esc(optionAnswer(o))}">${esc(o.label||o.k)}${card.rec&&String(card.rec.k)===String(o.k)?`<span class="tap">recommended · ${esc(card.rec.reason||"")}</span>`:""}</button>`).join("");stage.innerHTML=`<div class="hero question"><span class="eyebrow">${esc(card.priority||"decision")}</span><h2>${esc(card.question)}</h2><p>${esc(card.why||"")}</p><div id="choices">${choices}</div>${options.length?"":`<input id="text-answer" type="${card.answer_type==="number"?"number":"text"}" placeholder="${esc(card.format||"Type or dictate")}"><button id="submit-text">Record decision</button>`}<details style="margin-top:12px"><summary>note for the record</summary><input id="decision-note" placeholder="optional context"></details><button id="later">Later</button><div id="decision-error" style="color:var(--red);margin-top:10px"></div></div>`;stage.querySelectorAll("[data-value]").forEach(b=>b.onclick=()=>submit(card,b.dataset.value));const text=$("#submit-text");if(text)text.onclick=()=>{const v=$("#text-answer").value.trim();if(v)submit(card,card.answer_type==="number"?Number(v):v)};const m=$("#submit-multi");if(m)m.onclick=()=>{const picked=[...stage.querySelectorAll("[data-multi]:checked")].map(x=>x.dataset.multi);if(picked.length)submit(card,picked.join(" + "))};$("#later").onclick=async()=>{if(S.busy)return;S.busy=true;try{await api("/api/card-action",{method:"POST",body:JSON.stringify({qid:card.id,action:"later"})});await renderDecisions()}catch(e){$("#decision-error").textContent="Not deferred. This card stayed here."}finally{S.busy=false}}}
 async function submit(card,value){if(S.busy)return;S.busy=true;const stage=$("#decision-stage"),err=$("#decision-error"),note=$("#decision-note")?.value.trim()||"";stage.querySelectorAll("button,input").forEach(x=>x.disabled=true);if(err)err.textContent="Saving safely…";try{const r=await api("/api/answer",{method:"POST",body:JSON.stringify({qid:card.id,answer:value,note})});if(!r.ok)throw Error(r.error||"not accepted");await boot(false);show("decisions",false)}catch(e){stage.querySelectorAll("button,input").forEach(x=>x.disabled=false);if(err)err.textContent="Not recorded. Your card stayed here — tap again when connected."}finally{S.busy=false}}
 async function boot(reveal=true){try{connection("retrying","connecting");const [app,cards]=await Promise.all([api("/api/app-state"),api("/api/cards?campaign="+CAMPAIGN)]);S.app=app;S.cards=cards;renderWorld();renderFocus();$("#fatal").classList.remove("show");const initial=(location.hash||"#world").slice(1);show(initial,false)}catch(e){if(!$("#pair").classList.contains("show"))$("#fatal").classList.add("show")}}
-document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>show(b.dataset.go));$("#primary-region").onclick=()=>show("focus");$("#retry").onclick=()=>boot();addEventListener("popstate",()=>show((location.hash||"#world").slice(1),false));addEventListener("online",()=>{checkForUpdate();boot(false)});addEventListener("pageshow",()=>checkForUpdate());document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkForUpdate()});boot();
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>show(b.dataset.go));$("#primary-region").onclick=()=>show("focus");$("#retry").onclick=()=>boot();addEventListener("popstate",()=>show((location.hash||"#world").slice(1),false));addEventListener("online",()=>{checkForUpdate();boot(false)});addEventListener("online",()=>{if(S.view==="founder")loadFounderState()});addEventListener("pageshow",()=>{checkForUpdate();if(S.view==="founder")loadFounderState()});addEventListener("focus",()=>{if(S.view==="founder")loadFounderState()});document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"){checkForUpdate();if(S.view==="founder")loadFounderState()}});boot();
 </script></body></html>
