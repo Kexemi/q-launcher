@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const html = readFileSync(new URL('../app/index.html', import.meta.url), 'utf8');
+const version = JSON.parse(readFileSync(new URL('../app/app-version.json', import.meta.url), 'utf8'));
 
 function scriptBody() {
   const blocks = [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi)];
@@ -25,7 +26,7 @@ test('Founder voice is a first-class calm Owner App pane with explicit privacy s
     'Transcribing',
     'Thinking',
     'Speaking',
-    'Muted',
+    'Browser muted',
     'Error',
     'Tap to talk',
     'Not listening',
@@ -62,14 +63,52 @@ test('Founder turn uses the existing authenticated runtime and persists one curs
   assert.ok(js.includes('online'));
 });
 
+test('desktop global hotmic truth is shown without pretending a page keydown is global', () => {
+  assert.ok(html.includes('id="founder-desktop-shortcut"'));
+  assert.ok(js.includes('state.desktop_capture'));
+  assert.ok(js.includes('desktop_capture.state'));
+  assert.ok(js.includes('desktop_capture.microphone_open'));
+  assert.ok(html.includes('F13'));
+  assert.ok(html.includes('after speech, 5 seconds of silence finishes'));
+  assert.ok(html.includes('press F13 again to finish'));
+  assert.ok(html.includes('Ctrl+Shift+Space'));
+  assert.ok(!html.includes('F13 sends'));
+  assert.ok(js.includes('Desktop microphone on'));
+  assert.ok(js.includes('/api/founder/desktop/cancel'));
+  assert.ok(js.includes('setInterval'));
+  assert.ok(js.includes('S.view==="founder"'));
+  assert.ok(js.includes('document.visibilityState==="visible"'));
+  const backendDigest = js.match(/const FOUNDER_DESKTOP_BACKEND_SHA256="([0-9a-f]{64})"/)?.[1];
+  assert.equal(backendDigest, version.founder_desktop_backend_sha256);
+  assert.equal(backendDigest, '4c91ae59053b37c241f2672d362df26184cbb3ec64a35fa5d50656db621131d1');
+
+  assert.ok(!js.includes("addEventListener('keydown'"));
+  assert.ok(!js.includes('XBUTTON1'));
+  assert.ok(!js.includes('XBUTTON2'));
+});
+
+test('desktop cancel never invents mic-off truth and can suppress native playback', () => {
+  assert.ok(js.includes('founderApi("/api/founder/desktop/cancel"'));
+  assert.ok(!js.includes('api("/api/founder/desktop/cancel"'));
+  assert.ok(js.includes('Desktop local cancel could not be confirmed'));
+  assert.ok(js.includes('Desktop cancel is unconfirmed · live state shown above · no stop claim was made'));
+  assert.ok(js.includes('founderApi("/api/founder/desktop/cancel",{method:"POST",body:"{}"},8000)'));
+  assert.ok(js.includes('playback is cancelled'));
+  assert.ok(js.includes('desktop_capture.state==="processing"'));
+  assert.ok(!js.includes('catch{}await loadFounderState();$("#founder-privacy").textContent="Not listening'));
+  assert.ok(html.includes('Mute browser voice'));
+  assert.ok(js.includes('Browser muted'));
+  assert.ok(!js.includes('founderStateLabel("Muted")'));
+});
+
 test('spoken output has a text twin plus honest mute and local cancel controls', () => {
   assert.ok(html.includes('id="founder-mute"'));
   assert.ok(html.includes('id="founder-cancel"'));
   assert.ok(js.includes('speechSynthesis.speak'));
   assert.ok(js.includes('speechSynthesis.cancel'));
-  assert.ok(html.includes('Spoken on this device'));
+  assert.ok(html.includes('Reply speaks where you started the turn'));
   assert.ok(js.includes('response_text'));
-  assert.ok(js.includes('running server turn'));
+  assert.ok(js.includes('submitted turn continues safely'));
 });
 
 test('state refresh cannot hide an active local recording', () => {
@@ -88,9 +127,10 @@ test('playback failure preserves the text twin and local cancel preserves server
   const speak = js.slice(speakStart, speakEnd);
   assert.ok(speak.includes('the full text response remains below'));
   assert.ok(!speak.includes('founderStateLabel("Error","'));
-  const cancel = js.match(/#founder-cancel[\s\S]{0,700}/)?.[0] || '';
-  assert.ok(cancel.includes('S.founderBusy?"Thinking"'));
-  assert.ok(cancel.includes('a running server turn, if any, continues safely'));
+  const cancel = js.match(/#founder-cancel[\s\S]{0,1800}/)?.[0] || '';
+  assert.ok(cancel.includes('Desktop local cancel could not be confirmed'));
+  assert.ok(cancel.includes('desktop_capture.state==="processing"'));
+  assert.ok(cancel.includes('submitted turn continues safely'));
 });
 
 test('completed phone turns surface Founder response and prior voice context before transcript', () => {
